@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>本地部署指南 · 气味档案室</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f1e8;
+    color: #2d2820;
+    line-height: 1.7;
+    padding: 20px;
+  }
+  .container { max-width: 880px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  h1 { color: #8B4789; font-size: 28px; margin-bottom: 8px; }
+  h2 { color: #8B4789; font-size: 22px; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #f0e6d2; }
+  h3 { color: #6b5d4f; font-size: 18px; margin: 20px 0 12px; }
+  p { margin: 8px 0; color: #4a4036; }
+  code { background: #f5f1e8; color: #8B4789; padding: 2px 8px; border-radius: 4px; font-family: "SF Mono", Monaco, Consolas, monospace; font-size: 0.9em; }
+  pre { background: #2d2820; color: #f5f1e8; padding: 16px 20px; border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 0.88em; line-height: 1.5; }
+  pre code { background: transparent; color: inherit; padding: 0; }
+  .step { background: #faf6ed; border-left: 4px solid #8B4789; padding: 16px 20px; margin: 12px 0; border-radius: 0 8px 8px 0; }
+  .step-num { display: inline-block; background: #8B4789; color: #fff; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-weight: bold; margin-right: 10px; font-size: 14px; }
+  .tip { background: #e8f5e9; border-left: 4px solid #4caf50; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; }
+  .warn { background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid #e0d8c8; padding: 10px 14px; text-align: left; }
+  th { background: #f5f1e8; color: #4a4036; font-weight: 600; }
+  tr:nth-child(even) { background: #faf6ed; }
+  .badge { display: inline-block; background: #4caf50; color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 0.8em; margin-left: 8px; }
+  .platform-tabs { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+  .platform-tab { padding: 8px 18px; background: #f5f1e8; border-radius: 6px; cursor: default; font-size: 0.9em; color: #6b5d4f; }
+  .platform-tab.active { background: #8B4789; color: #fff; }
+  @media print { body { padding: 0; } .container { box-shadow: none; border-radius: 0; max-width: 100%; } pre { white-space: pre-wrap; word-wrap: break-word; } }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🖥️ 本地部署指南</h1>
+<p>气味档案室 · AI香氛课程工作台 — 在你自己的电脑上运行网站</p>
+
+<div class="tip">
+<strong>为什么本地部署？</strong> 本地部署后网站在你电脑上运行，无需联网、永不掉线、数据隐私安全。适合课堂教学、离线使用、数据敏感场景。
+</div>
+
+<h2>📦 方案一：单文件直接打开（最简单）</h2>
+<p>无需任何服务器，<strong>双击 HTML 文件</strong>即可在浏览器中使用。</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>下载文件</strong>
+<p style="margin-top:8px">从 GitHub 仓库下载以下核心文件到本地同一个文件夹：</p>
+<pre><code># 方式 A：下载整个仓库（推荐）
+git clone https://github.com/YOU-bobo/scent-archive.git
+
+# 方式 B：手动下载单个文件
+# 访问 https://github.com/YOU-bobo/scent-archive
+# 点击文件 → Download raw file</code></pre>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>双击打开</strong>
+<p style="margin-top:8px">在下载的文件夹中：</p>
+<ul style="margin:8px 0 0 30px">
+<li>双击 <code>index.html</code> → 打开课程主应用</li>
+<li>双击 <code>ppt-standalone.html</code> → 打开 PPT 演示</li>
+<li>双击 <code>materials.html</code> → 打开材料清单</li>
+</ul>
+</div>
+
+<div class="warn">
+<strong>限制：</strong>单文件直接打开时，PWA（装成 App）和云同步功能<strong>可能受限</strong>，因为浏览器对 <code>file://</code> 协议有安全限制。如需完整功能，请用方案二或三。
+</div>
+
+<h2>🖥️ 方案二：Python 本地服务器（推荐课堂教学用）</h2>
+<p>用 Python 启动本地 HTTP 服务器，所有功能完整可用（PWA、云同步、Service Worker）。</p>
+
+<h3>Windows 操作步骤</h3>
+<div class="step">
+<span class="step-num">1</span><strong>安装 Python</strong>
+<p style="margin-top:8px">访问 https://www.python.org/downloads/ 下载 Python 3.x，安装时勾选 <code>Add Python to PATH</code>。</p>
+<p>验证安装：打开<strong>命令提示符</strong>（Win+R 输入 <code>cmd</code>），运行：</p>
+<pre><code>python --version
+# 输出 Python 3.10.x 即正常</code></pre>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>下载网站文件</strong>
+<p style="margin-top:8px">将仓库克隆或下载解压到本地，例如：<code>C:\scent-archive\</code></p>
+<pre><code>cd C:\
+git clone https://github.com/YOU-bobo/scent-archive.git
+cd scent-archive</code></pre>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>启动服务器</strong>
+<pre><code>python -m http.server 8080</code></pre>
+<p style="margin-top:8px">看到输出 <code>Serving HTTP on :: port 8080</code> 即启动成功。<strong>不要关闭此窗口</strong>。</p>
+</div>
+
+<div class="step">
+<span class="step-num">4</span><strong>浏览器访问</strong>
+<p style="margin-top:8px">打开浏览器，访问：</p>
+<pre><code>http://localhost:8080/</code></pre>
+</div>
+
+<h3>macOS 操作步骤</h3>
+<div class="step">
+<span class="step-num">1</span><strong>打开终端</strong>
+<p style="margin-top:8px">macOS 自带 Python，直接打开<strong>终端</strong>（Launchpad → 其他 → 终端）。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>下载文件并启动</strong>
+<pre><code>cd ~/Desktop
+git clone https://github.com/YOU-bobo/scent-archive.git
+cd scent-archive
+python3 -m http.server 8080</code></pre>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>访问</strong>
+<p style="margin-top:8px">Safari 或 Chrome 访问 <code>http://localhost:8080/</code></p>
+</div>
+
+<h2>🌐 方案三：局域网共享（让手机/其他电脑访问）</h2>
+<p>启动服务器时绑定 <code>0.0.0.0</code>，同一 WiFi 下的设备都能访问。</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>启动共享服务器</strong>
+<pre><code># Windows / macOS 通用
+python -m http.server 8080 --bind 0.0.0.0</code></pre>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>查看本机 IP</strong>
+<pre><code># Windows
+ipconfig | findstr IPv4
+
+# macOS
+ifconfig | grep "inet " | grep -v 127</code></pre>
+<p style="margin-top:8px">找到类似 <code>192.168.1.100</code> 的地址。</p>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>手机访问</strong>
+<p style="margin-top:8px">手机连接同一 WiFi，浏览器打开：</p>
+<pre><code>http://192.168.1.100:8080/</code></pre>
+<p style="margin-top:8px">替换为你电脑的实际 IP 地址。</p>
+</div>
+
+<div class="warn">
+<strong>⚠️ 防火墙提示：</strong>Windows 首次启动可能弹窗"Windows 防火墙已阻止此应用"，请勾选<strong>专用网络</strong> → 允许访问。macOS 一般无此问题。
+</div>
+
+<h2>📱 本地部署后装成 App</h2>
+<p>本地服务器（方案二、三）运行后，可装成 PWA App：</p>
+
+<table>
+<tr><th>平台</th><th>浏览器</th><th>操作</th></tr>
+<tr><td>📱 Android</td><td>Chrome</td><td>菜单 ⋮ → 添加到主屏幕 / 安装应用</td></tr>
+<tr><td>🍎 iOS</td><td>Safari</td><td>分享按钮 → 添加到主屏幕</td></tr>
+<tr><td>💻 Windows/Mac</td><td>Chrome/Edge</td><td>地址栏右侧安装图标 → 安装</td></tr>
+</table>
+
+<h2>🔄 后续更新网站</h2>
+<p>如果网站有更新，拉取最新代码即可：</p>
+<pre><code>cd scent-archive
+git pull origin main
+
+# 重启服务器（Ctrl+C 停止后重新启动）
+python -m http.server 8080</code></pre>
+
+<h2>❓ 常见问题</h2>
+
+<h3>Q1：启动服务器后浏览器打不开？</h3>
+<p><strong>A：</strong>检查：</p>
+<ul style="margin:8px 0 0 30px">
+<li>命令提示符窗口是否显示 <code>Serving HTTP on :: port 8080</code>（看到才算启动成功）</li>
+<li>端口是否被占用：换端口 <code>python -m http.server 8000</code></li>
+<li>防火墙是否放行（见方案三防火墙提示）</li>
+</ul>
+
+<h3>Q2：手机访问 404？</h3>
+<p><strong>A：</strong>确认：</p>
+<ul style="margin:8px 0 0 30px">
+<li>手机和电脑连同一个 WiFi</li>
+<li>IP 地址正确（用 <code>ipconfig</code>/<code>ifconfig</code> 查询）</li>
+<li>电脑防火墙允许该端口（Windows 专用网络）</li>
+</ul>
+
+<h3>Q3：PWA 装成 App 后图标不显示？</h3>
+<p><strong>A：</strong>清浏览器缓存后重装。本地部署图标文件必须在同目录。</p>
+
+<h3>Q4：不想每次手动启动？</h3>
+<p><strong>A：</strong>用 Node.js + http-server 包安装为全局服务：</p>
+<pre><code># 安装 Node.js 后
+npm install -g http-server
+
+# 任意目录运行
+http-server -p 8080</code></pre>
+
+<h2>📋 部署方式对比</h2>
+<table>
+<tr><th>方案</th><th>难度</th><th>需联网</th><th>PWA</th><th>云同步</th><th>多设备访问</th></tr>
+<tr><td>① 单文件双击</td><td>★ 最简单</td><td>否</td><td>受限</td><td>受限</td><td>否</td></tr>
+<tr><td>② Python 服务器</td><td>★★ 简单</td><td>否</td><td>✓</td><td>✓</td><td>仅本机</td></tr>
+<tr><td>③ 局域网共享</td><td>★★★ 中等</td><td>否</td><td>✓</td><td>✓</td><td>✓ 同WiFi</td></tr>
+<tr><td>GitHub Pages</td><td>★★ 简单</td><td>是</td><td>✓</td><td>✓</td><td>✓ 全球</td></tr>
+</table>
+
+<div class="tip">
+<strong>推荐：</strong>课堂教学用方案③（局域网共享），学生手机扫码即可访问；离线使用选方案②；最省事选方案①或 GitHub Pages（已部署：<a href="https://you-bobo.github.io/scent-archive/">https://you-bobo.github.io/scent-archive/</a>）。
+</div>
+
+</div>
+</body>
+</html>
