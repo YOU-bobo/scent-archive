@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>气味档案室 · 安装说明</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    margin: 0; padding: 24px; color: #2c2c2c; line-height: 1.65; background: #fff;
+    max-width: 820px; margin: 0 auto;
+  }
+  h1 { text-align: center; font-size: 22px; margin: 0 0 4px; color: #5a4a3a; }
+  .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 24px; }
+  h2 {
+    font-size: 16px; color: #fff; padding: 8px 14px; margin: 28px 0 12px;
+    border-radius: 6px; page-break-after: avoid;
+  }
+  h2.android { background: #6ba368; }
+  h2.ios { background: #5a8dc4; }
+  h2.deploy { background: #8a6d5a; }
+  h2.desktop { background: #c97a4a; }
+  h2.data { background: #9a7ab5; }
+  h2.trouble { background: #d47a9e; }
+  h2.appendix { background: #6ba368; }
+  h3 {
+    font-size: 14px; color: #5a4a3a; border-left: 4px solid #c9a77c;
+    padding-left: 10px; margin: 18px 0 8px; page-break-after: avoid;
+  }
+  p { margin: 6px 0; font-size: 13.5px; }
+  ol, ul { padding-left: 22px; margin: 8px 0; font-size: 13.5px; }
+  li { margin-bottom: 5px; }
+  .step {
+    background: #faf6ef; border-left: 3px solid #c9a77c; padding: 10px 14px;
+    margin: 10px 0; border-radius: 4px; font-size: 13.5px;
+  }
+  .tip {
+    background: #eaf5e8; border-left: 3px solid #6ba368; padding: 10px 14px;
+    margin: 10px 0; border-radius: 4px; font-size: 13px; color: #3a5a38;
+  }
+  .warn {
+    background: #fce8db; border-left: 3px solid #c97a4a; padding: 10px 14px;
+    margin: 10px 0; border-radius: 4px; font-size: 13px; color: #7a4a2a;
+  }
+  code {
+    background: #f0ebe4; padding: 1px 5px; border-radius: 3px;
+    font-family: "Consolas", "Courier New", monospace; font-size: 12.5px;
+  }
+  pre {
+    background: #2c2c2c; color: #f5ece0; padding: 12px 14px;
+    border-radius: 5px; overflow-x: auto; font-size: 12.5px; line-height: 1.5;
+  }
+  .card {
+    border: 1px solid #e0d5c5; border-radius: 6px; padding: 14px 16px;
+    margin: 10px 0; background: #fff;
+  }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; color: #fff; margin-right: 4px;
+  }
+  .b-and { background: #6ba368; }
+  .b-ios { background: #5a8dc4; }
+  .b-all { background: #8a6d5a; }
+  .footer {
+    text-align: center; color: #999; font-size: 11px; margin-top: 32px;
+    padding-top: 12px; border-top: 1px dashed #ccc;
+  }
+  @media print {
+    body { padding: 10px; font-size: 12px; }
+    h1 { font-size: 19px; }
+    h2 { font-size: 14px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .step, .tip, .warn { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🌸 气味档案室 · 安装说明</h1>
+<div class="subtitle">AI 香氛课程工作台 · PWA 应用 · 全平台安装指南</div>
+
+<div class="card">
+  <p><b>📦 应用类型：</b>PWA（渐进式 Web 应用）</p>
+  <p><b>📱 支持平台：</b>
+    <span class="badge b-and">Android</span>
+    <span class="badge b-ios">iOS</span>
+    <span class="badge b-all">桌面浏览器</span>
+  </p>
+  <p><b>✨ 核心特性：</b></p>
+  <ul>
+    <li>✅ 独立图标启动（无浏览器地址栏）</li>
+    <li>✅ 离线可用（首次加载后）</li>
+    <li>✅ 数据自动保存（本地存储，无需账号）</li>
+    <li>✅ PDF 导出配方与笔记</li>
+    <li>✅ 16 周课程内容 + AI 辅助工具</li>
+  </ul>
+</div>
+
+<!-- ========== Android ========== -->
+<h2 class="android">🤖 一、Android 手机安装</h2>
+
+<h3>1.1 推荐浏览器</h3>
+<p>使用 <b>Google Chrome</b>（推荐）或 <b>Microsoft Edge</b> 打开应用网址。</p>
+<div class="tip">💡 Chrome 支持一键弹出"安装应用"提示；其他浏览器需手动操作。</div>
+
+<h3>1.2 步骤</h3>
+<div class="step">
+  <b>第 1 步</b>：用 Chrome 打开应用网址（如 https://你的域名/index.html）
+</div>
+<div class="step">
+  <b>第 2 步</b>：页面加载完成后，有两种安装方式：<br>
+  <b>方式 A</b>（推荐）：等待 3-5 秒，页面顶部出现提示 📱 "可安装为App"，点击提示即可<br>
+  <b>方式 B</b>：点击浏览器右上角菜单 <b>⋮</b> → 选择 <b>"安装应用"</b> 或 <b>"添加到主屏幕"</b>
+</div>
+<div class="step">
+  <b>第 3 步</b>：弹出确认框"将应用添加到主屏幕"→ 点击 <b>添加</b>
+</div>
+<div class="step">
+  <b>第 4 步</b>：桌面出现 <b>"气味档案"</b> 图标，点击即全屏启动 ✨
+</div>
+
+<h3>1.3 卸载</h3>
+<p>长按桌面图标 → 选择 <b>卸载</b> 或拖动到"卸载"区域。</p>
+
+<!-- ========== iOS ========== -->
+<h2 class="ios">🍎 二、iPhone / iPad 安装</h2>
+
+<h3>2.1 必须使用 Safari</h3>
+<div class="warn">
+  ⚠️ <b>重要：</b>iOS 仅支持 <b>Safari</b> 浏览器安装 PWA。<br>
+  请不要使用 Chrome、微信浏览器等第三方 App 打开，否则无法"添加到主屏幕"。
+</div>
+
+<h3>2.2 步骤</h3>
+<div class="step">
+  <b>第 1 步</b>：打开 <b>Safari</b>，访问应用网址（https://你的域名/index.html）
+</div>
+<div class="step">
+  <b>第 2 步</b>：点击屏幕底部的 <b>分享按钮</b>（方框内有箭头 ↑）
+</div>
+<div class="step">
+  <b>第 3 步</b>：在弹出菜单中向下滚动，找到 <b>"添加到主屏幕"</b>
+</div>
+<div class="step">
+  <b>第 4 步</b>：确认名称"气味档案"→ 点击右上角 <b>添加</b>
+</div>
+<div class="step">
+  <b>第 5 步</b>：主屏幕出现图标，点击即全屏启动 ✨
+</div>
+
+<h3>2.3 iOS 小技巧</h3>
+<div class="tip">
+  💡 首次打开 App 时，iOS 会提示"是否允许通知"，可按需选择。<br>
+  💡 清除 Safari 缓存不会删除 App 内的数据（数据存在 App 沙盒中）。
+</div>
+
+<h3>2.4 卸载</h3>
+<p>长按主屏幕图标 → <b>编辑主屏幕</b> → 点击图标左上角 <b>×</b>。</p>
+
+<!-- ========== 部署 ========== -->
+<h2 class="deploy">🚀 三、部署到 HTTPS 服务器（手机可访问）</h2>
+
+<div class="warn">
+  ⚠️ <b>PWA 要求 HTTPS！</b>localhost 测试没问题，但手机直接访问必须部署到 HTTPS 域名，
+  否则 Service Worker（离线/安装）无法生效。
+</div>
+
+<p>推荐 3 种免费方案，任选其一：</p>
+
+<h3>3.1 方案 A：GitHub Pages（最常用）</h3>
+<div class="step">
+  <b>1. 新建 GitHub 仓库</b>：如 <code>scent-archive</code>，设为 Public
+</div>
+<div class="step">
+  <b>2. 上传文件</b>：将以下 6 个文件上传到仓库根目录：
+<pre>index.html
+manifest.json
+sw.js
+icon.svg
+icon-maskable.svg
+materials_10.html</pre>
+</div>
+<div class="step">
+  <b>3. 开启 Pages</b>：仓库 Settings → Pages → Branch 选 <code>main</code> → Save
+</div>
+<div class="step">
+  <b>4. 获取网址</b>：等待 1-2 分钟后，页面显示类似：
+  <code>https://你的用户名.github.io/scent-archive/index.html</code>
+</div>
+<div class="tip">💡 这是 HTTPS 地址，可直接用于手机安装。自定义域名可在 Pages 设置中配置。</div>
+
+<h3>3.2 方案 B：Netlify（拖拽上传，超简单）</h3>
+<div class="step">
+  <b>1.</b> 访问 <b>app.netlify.com/drop</b>
+</div>
+<div class="step">
+  <b>2.</b> 将 6 个文件打包成 zip（或拖拽文件夹）拖到网页上传区
+</div>
+<div class="step">
+  <b>3.</b> 自动生成地址：<code>https://xxx.netlify.app/</code>，HTTPS 开箱即用
+</div>
+<div class="tip">💡 无需注册可匿名使用（但不保留更新权限）。推荐用 GitHub 账号登录后上传，便于后续更新。</div>
+
+<h3>3.3 方案 C：Vercel（国内访问较快）</h3>
+<div class="step">
+  <b>1.</b> 访问 <b>vercel.com</b>，用 GitHub 账号登录
+</div>
+<div class="step">
+  <b>2.</b> 点击"New Project"→ 选择 GitHub 仓库 → Deploy
+</div>
+<div class="step">
+  <b>3.</b> 自动生成地址：<code>https://xxx.vercel.app/</code>
+</div>
+<div class="tip">💡 Vercel 国内 CDN 节点多，手机访问速度通常比 GitHub Pages 好。</div>
+
+<h3>3.4 部署验证</h3>
+<p>部署完成后，打开浏览器开发者工具（F12）→ <b>Application 选项卡</b>：</p>
+<ul>
+  <li>左侧 <b>Manifest</b>：能看到图标、名称等信息 → ✅ 正常</li>
+  <li>左侧 <b>Service Workers</b>：显示 <code>sw.js</code> 且 status 为 <code>activated</code> → ✅ 正常</li>
+</ul>
+
+<!-- ========== 桌面 ========== -->
+<h2 class="desktop">💻 四、桌面浏览器使用</h2>
+
+<h3>4.1 快速打开</h3>
+<p>直接在 Chrome / Edge / Firefox / Safari 中打开网址即可使用。<b>推荐 Chrome 或 Edge</b>（PWA 功能最全）。</p>
+
+<h3>4.2 桌面安装（Chrome / Edge）</h3>
+<div class="step">
+  <b>第 1 步</b>：打开网址后，地址栏右侧出现 <b>🔽 安装</b> 按钮
+</div>
+<div class="step">
+  <b>第 2 步</b>：点击 → 确认"安装"→ 桌面生成快捷方式
+</div>
+<div class="step">
+  <b>第 3 步</b>：启动后独立窗口运行，像桌面软件
+</div>
+<div class="tip">💡 Windows：开始菜单会出现"气味档案"图标；Mac：启动台出现图标。</div>
+
+<h3>4.3 导出 PDF</h3>
+<p>课程内任一周次 → 点击顶部 <b>📄 学习档案</b> → <b>🖨 导出PDF</b> → 打印机选择 <b>"另存为PDF"</b>。</p>
+
+<!-- ========== 数据 ========== -->
+<h2 class="data">💾 五、数据备份与迁移</h2>
+
+<h3>5.1 数据存储位置</h3>
+<div class="card">
+  <p>数据保存在浏览器/手机的 <b>localStorage</b>，包括：</p>
+  <ul>
+    <li>每一周的笔记内容</li>
+    <li>所有配方记录</li>
+    <li>标签设计方案</li>
+    <li>AI 分析历史</li>
+  </ul>
+  <p><b>特点：</b>无需账号、无云端同步；卸载 App / 清浏览器缓存 = 数据丢失。请定期备份！</p>
+</div>
+
+<h3>5.2 备份方法（每周做一次）</h3>
+<div class="step">
+  <b>第 1 步</b>：进入 App → 点击右上角 <b>⚙ 设置</b>（或设置按钮）
+</div>
+<div class="step">
+  <b>第 2 步</b>：选择 <b>"📦 导出数据"</b> → 下载 JSON 文件
+</div>
+<div class="step">
+  <b>第 3 步</b>：保存到邮箱 / 网盘 / 微信文件传输助手
+</div>
+
+<h3>5.3 恢复 / 迁移到新手机</h3>
+<div class="step">
+  <b>第 1 步</b>：在新手机安装 App（按上述安装步骤）
+</div>
+<div class="step">
+  <b>第 2 步</b>：打开 App → <b>⚙ 设置</b> → <b>"📂 导入数据"</b>
+</div>
+<div class="step">
+  <b>第 3 步</b>：选择之前导出的 JSON 文件 → 确认覆盖
+</div>
+
+<div class="warn">
+  ⚠️ 导入会<b>覆盖</b>当前 App 内所有数据，请先导出备份再操作。
+</div>
+
+<!-- ========== 故障 ========== -->
+<h2 class="trouble">🔧 六、常见问题与解决</h2>
+
+<div class="card">
+  <p><b>Q1：桌面能打开，手机提示"无法访问"？</b></p>
+  <p>A：localhost 仅本机可访问，需按 <b>第三节</b> 部署到 HTTPS 服务器，手机才能访问。</p>
+</div>
+
+<div class="card">
+  <p><b>Q2：手机打开后没有"安装应用"或"添加到主屏幕"选项？</b></p>
+  <ul>
+    <li>Android：确认用的是 Chrome/Edge，且页面完全加载后再打开菜单</li>
+    <li>iOS：必须用 <b>Safari</b>，Chrome 不支持</li>
+    <li>检查是否为 HTTPS 网址（http:// 开头不行）</li>
+  </ul>
+</div>
+
+<div class="card">
+  <p><b>Q3：添加到主屏幕后，打开是空白页？</b></p>
+  <p>A：Service Worker 缓存版本不一致导致。<b>解决：</b></p>
+  <ol>
+    <li>删除桌面图标（卸载 PWA）</li>
+    <li>浏览器中清除该站点缓存（Chrome：设置 → 隐私 → 清除浏览数据，勾选"缓存的图片和文件"）</li>
+    <li>重新访问网址 → 再次"添加到主屏幕"</li>
+  </ol>
+</div>
+
+<div class="card">
+  <p><b>Q4：断网后无法打开？</b></p>
+  <p>A：首次访问必须联网，之后 Service Worker 自动缓存。<b>解决：</b></p>
+  <ul>
+    <li>在联网状态下完整打开一次页面</li>
+    <li>Chrome DevTools → Application → Service Workers 确认 status 为 activated</li>
+  </ul>
+</div>
+
+<div class="card">
+  <p><b>Q5：安卓手机安装后图标太小/模糊？</b></p>
+  <p>A：本 App 使用 SVG 矢量图标，可任意缩放不模糊。<b>如果看起来小：</b></p>
+  <ol>
+    <li>可能是启动器图标适配问题，换一个手机启动器试试</li>
+    <li>或替换 <code>icon.svg</code> 为 PNG 192×192 和 512×512 各一张</li>
+  </ol>
+</div>
+
+<div class="card">
+  <p><b>Q6：iOS 首次启动有白屏？</b></p>
+  <p>A：网络缓存延迟。<b>解决：</b>从主屏幕卸载 App → Safari 清除历史记录 → 重新添加。</p>
+</div>
+
+<div class="card">
+  <p><b>Q7：数据丢了怎么办？</b></p>
+  <p>A：如果之前有导出 JSON 文件，按 <b>5.3</b> 恢复即可。未备份无法找回，请养成定期导出的习惯。</p>
+</div>
+
+<!-- ========== 附录 ========== -->
+<h2 class="appendix">📋 附录：文件清单</h2>
+
+<table border="1" style="width:100%;border-collapse:collapse;font-size:12.5px">
+  <thead style="background:#f5ece0">
+    <tr><th style="padding:6px 8px;text-align:left">文件名</th><th style="padding:6px 8px;text-align:left">说明</th><th style="padding:6px 8px;text-align:left">必须</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="padding:6px 8px"><code>index.html</code></td><td>应用主程序（含 16 周课程内容）</td><td>✅</td></tr>
+    <tr><td style="padding:6px 8px"><code>manifest.json</code></td><td>PWA 清单（名称/图标/全屏模式）</td><td>✅</td></tr>
+    <tr><td style="padding:6px 8px"><code>sw.js</code></td><td>Service Worker（离线缓存）</td><td>✅</td></tr>
+    <tr><td style="padding:6px 8px"><code>icon.svg</code></td><td>App 图标（矢量）</td><td>✅</td></tr>
+    <tr><td style="padding:6px 8px"><code>icon-maskable.svg</code></td><td>Android 自适应适配图标</td><td>✅</td></tr>
+    <tr><td style="padding:6px 8px"><code>materials_10.html</code></td><td>10 人课堂材料采购清单（可选页面）</td><td>—</td></tr>
+    <tr><td style="padding:6px 8px"><code>materials.html</code></td><td>原版材料清单（可选页面）</td><td>—</td></tr>
+    <tr><td style="padding:6px 8px"><code>install.html</code></td><td>本说明文档</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  🌸 气味档案室 · 安装说明 v1.0 · PWA 应用<br>
+  打印建议：A4 纵向 · 浏览器 Ctrl+P 直接打印
+</div>
+
+</body>
+</html>

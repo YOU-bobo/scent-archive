@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#4a3f35">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>🌸 气味档案室 · AI香氛课程工作台</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="apple-touch-icon" href="./icon.svg">
+<link rel="apple-touch-icon image_sizes_192x192" href="./icon.svg">
+<link rel="apple-touch-icon image_sizes_512x512" href="./icon.svg">
+<style>
+  :root {
+    --page-bg: #fef9f3;
+    --surface-card: #ffffff;
+    --surface-nested: #faf3eb;
+    --border: #f0e4d6;
+    --border-input: #ddd0bc;
+    --text: #4a3f35;
+    --text-secondary: #8a7a68;
+    --text-tertiary: #b8a896;
+    --accent: #d4794a;
+    --accent-light: #f5e0d3;
+    --accent-muted: #fce8db;
+    --on-accent: #ffffff;
+    --green: #6ba368;
+    --green-light: #e4f2e0;
+    --blue: #5a8dc4;
+    --blue-light: #dde9f5;
+    --yellow: #e0a93b;
+    --yellow-light: #fdf2dd;
+    --purple: #9a7ab5;
+    --purple-light: #ede4f5;
+    --pink: #d47a9e;
+    --pink-light: #f8e0ea;
+    --danger: #d4594a;
+    --sidebar-bg: #4a3f35;
+    --sidebar-bg-top: #5a4d40;
+    --sidebar-text: #fef9f3;
+    --sidebar-text-mute: rgba(254,249,243,.55);
+    --sidebar-hover: rgba(254,249,243,.08);
+    --sidebar-active: rgba(254,249,243,.15);
+    --radius: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+    --shadow: 0 2px 8px rgba(74,63,53,.06), 0 1px 3px rgba(74,63,53,.04);
+    --shadow-lg: 0 8px 24px rgba(74,63,53,.12);
+    --font: -apple-system, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", system-ui, sans-serif;
+    --sidebar-w: 280px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: var(--page-bg); color: var(--text); font-family: var(--font);
+    font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+    min-height: 100vh; overflow-x: hidden;
+  }
+  body { padding-top: var(--safe-top); padding-bottom: calc(var(--safe-bottom) + 20px); }
+  img { max-width: 100%; }
+  button { font-family: var(--font); cursor: pointer; border: none; background: none; color: inherit; }
+  input, textarea, select { font-family: var(--font); }
+
+  /* === 移动端顶部栏 === */
+  .topbar {
+    position: sticky; top: 0; z-index: 40;
+    background: linear-gradient(180deg, var(--sidebar-bg-top), var(--sidebar-bg));
+    color: var(--sidebar-text);
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px;
+    padding-top: calc(var(--safe-top) + 12px);
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+  }
+  .menu-btn {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: grid; place-items: center;
+    background: rgba(255,255,255,.1);
+    font-size: 20px; flex-shrink: 0;
+    transition: background .15s;
+  }
+  .menu-btn:active { background: rgba(255,255,255,.2); }
+  .topbar .brand-text { flex: 1; min-width: 0; }
+  .topbar h1 { font-size: 16px; font-weight: 800; }
+  .topbar p { font-size: 10px; opacity: .55; }
+  .topbar .save-badge {
+    font-size: 10px; padding: 4px 8px; border-radius: 999px;
+    background: var(--green); color: #fff; font-weight: 700;
+    display: flex; align-items: center; gap: 4px;
+    flex-shrink: 0;
+  }
+  .topbar .save-badge.saving { background: var(--yellow); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+
+  /* === 侧边栏遮罩 === */
+  .drawer-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5);
+    z-index: 50; opacity: 0; visibility: hidden;
+    transition: opacity .2s, visibility .2s;
+    backdrop-filter: blur(2px);
+  }
+  .drawer-overlay.open { opacity: 1; visibility: visible; }
+
+  /* === 侧边栏 === */
+  .sidebar {
+    background: linear-gradient(180deg, var(--sidebar-bg-top), var(--sidebar-bg));
+    color: var(--sidebar-text); position: fixed; top: 0; left: 0;
+    width: var(--sidebar-w); height: 100vh; z-index: 60;
+    display: flex; flex-direction: column;
+    transform: translateX(-100%); transition: transform .25s cubic-bezier(.2,.8,.3,1);
+    box-shadow: 4px 0 20px rgba(0,0,0,.15);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar .brand { padding: 22px 20px 16px; display: flex; align-items: center; gap: 12px; padding-top: calc(var(--safe-top) + 22px); }
+  .sidebar .brand .logo { width: 44px; height: 44px; border-radius: 14px; background: var(--accent);
+    display: grid; place-items: center; font-size: 24px; flex: 0 0 auto; }
+  .sidebar .brand h1 { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+  .sidebar .brand p { font-size: 11px; opacity: .5; margin-top: 2px; }
+  .sidebar .close-btn {
+    margin-left: auto; width: 32px; height: 32px; border-radius: 8px;
+    background: rgba(255,255,255,.1); display: grid; place-items: center;
+    font-size: 16px;
+  }
+  .sidebar .nav-title { font-size: 11px; opacity: .4; padding: 8px 22px 6px; letter-spacing: .08em; }
+  .sidebar .nav { flex: 1; overflow-y: auto; padding: 0 10px 12px; -webkit-overflow-scrolling: touch; }
+  .sidebar .nav::-webkit-scrollbar { width: 5px; }
+  .sidebar .nav::-webkit-scrollbar-thumb { background: var(--sidebar-text-mute); border-radius: 6px; }
+  .week-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 11px; cursor: pointer; transition: background .15s; margin-bottom: 3px;
+  }
+  .week-item:active { background: var(--sidebar-hover); }
+  .week-item.active { background: var(--sidebar-active); }
+  .week-item .wnum {
+    width: 28px; height: 28px; border-radius: 8px; flex: 0 0 auto;
+    display: grid; place-items: center; font-size: 12px; font-weight: 800;
+    background: rgba(254,249,243,.1); color: var(--sidebar-text);
+  }
+  .week-item.active .wnum { background: var(--accent); color: var(--on-accent); }
+  .week-item.done .wnum { background: var(--green); color: var(--on-accent); }
+  .week-item .wtext { flex: 1; min-width: 0; }
+  .week-item .wtitle { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .week-item .wdesc { font-size: 11px; opacity: .5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .week-item .ai-tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: var(--purple); color: #fff; font-weight: 700; flex: 0 0 auto; }
+  .sidebar .foot { padding: 10px 12px; font-size: 11px; opacity: .45; border-top: 1px solid var(--sidebar-hover); padding-bottom: calc(var(--safe-bottom) + 10px); }
+  .data-menu { margin: 6px 8px 0; border-radius: 10px; background: rgba(254,249,243,.06); padding: 6px; display: flex; flex-direction: column; gap: 3px; }
+  .data-btn { font-size: 12px; color: var(--sidebar-text); padding: 9px 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; opacity: .75; transition: all .15s; border: none; background: transparent; text-align: left; width: 100%; }
+  .data-btn:active { background: var(--sidebar-hover); opacity: 1; }
+  .data-btn .bic { font-size: 14px; }
+  .data-title { font-size: 10px; opacity: .5; padding: 4px 10px 0; letter-spacing: .06em; }
+
+  /* === 主区域 === */
+  .main { padding: 16px 14px 40px; max-width: 800px; margin: 0 auto; }
+
+  /* === 课程头部 === */
+  .course-header {
+    border-radius: var(--radius-lg); padding: 20px 18px; margin-bottom: 16px;
+    display: flex; align-items: flex-start; gap: 14px; position: relative; overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .course-header .emoji { font-size: 40px; flex: 0 0 auto; line-height: 1; }
+  .course-header .info { flex: 1; min-width: 0; }
+  .course-header .week-label { font-size: 12px; font-weight: 700; opacity: .75; }
+  .course-header h2 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin-top: 4px; }
+  .course-header .desc { font-size: 13px; opacity: .72; margin-top: 6px; }
+  .course-header .badge-area { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .course-header .badge {
+    font-size: 11px; padding: 4px 10px; border-radius: 999px; font-weight: 700;
+    background: rgba(255,255,255,.3);
+  }
+  .course-header .badge.ai { background: var(--purple); color: #fff; }
+
+  /* === 卡片 === */
+  .card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 16px 16px; }
+  .sec-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; margin: 0 0 12px; }
+  .sec-title .emoji { font-size: 18px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+  /* === 学习目标 === */
+  .goal-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; }
+  .goal-item .check { width: 22px; height: 22px; border-radius: 7px; flex: 0 0 auto; display: grid; place-items: center; font-size: 11px; font-weight: 800; margin-top: 1px; }
+  .goal-item .text { font-size: 13px; line-height: 1.55; }
+
+  /* === 任务步骤 === */
+  .task-list { display: flex; flex-direction: column; gap: 8px; }
+  .task-item {
+    display: flex; align-items: center; gap: 10px; padding: 12px 12px;
+    border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-card);
+    transition: border-color .15s; cursor: pointer;
+  }
+  .task-item:active { border-color: var(--accent); background: var(--accent-muted); }
+  .task-item .step-num {
+    width: 28px; height: 28px; border-radius: 9px; flex: 0 0 auto;
+    display: grid; place-items: center; font-size: 13px; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .task-item .step-text { flex: 1; font-size: 13px; font-weight: 600; line-height: 1.45; }
+  .task-item .step-hint { font-size: 11px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; }
+  .task-item.done { opacity: .65; }
+  .task-item.done .step-text { text-decoration: line-through; }
+
+  /* === 按钮 === */
+  .btn {
+    background: var(--accent); color: var(--on-accent); border: none; border-radius: 10px;
+    padding: 11px 18px; font-size: 14px; cursor: pointer; font-weight: 700;
+    box-shadow: var(--shadow); transition: filter .15s, transform .1s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  }
+  .btn:active { filter: brightness(.95); transform: translateY(1px); }
+  .btn.ghost { background: var(--surface-card); color: var(--text-secondary); border: 1px solid var(--border-input); box-shadow: none; font-weight: 600; }
+  .btn.green { background: var(--green); }
+  .btn.blue { background: var(--blue); }
+  .btn.purple { background: var(--purple); }
+  .btn.yellow { background: var(--yellow); }
+  .btn-block { width: 100%; }
+
+  /* === 输入框 === */
+  input, textarea, select {
+    font-size: 15px; border: 1px solid var(--border-input);
+    border-radius: 10px; padding: 11px 14px; background: var(--surface-card);
+    color: var(--text); outline: none; transition: border-color .15s, box-shadow .15s; width: 100%;
+    -webkit-appearance: none; appearance: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-muted); }
+  textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a7a68' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px; }
+
+  /* === 工具区 === */
+  .tool-section { margin-top: 16px; }
+  .tool-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 16px 16px; margin-bottom: 14px; }
+
+  /* === AI分析 === */
+  .ai-box { background: var(--purple-light); border-radius: var(--radius-lg); padding: 16px; border: 1px solid #d9c5ed; }
+  .ai-box .ai-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .ai-box .ai-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; background: var(--purple); color: #fff; font-size: 12px; font-weight: 700; }
+  .ai-suggestions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .ai-suggestion { padding: 7px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-card); font-size: 12px; color: var(--text-secondary); cursor: pointer; transition: all .15s; }
+  .ai-suggestion:active { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+  .ai-result { background: var(--surface-card); border-radius: 12px; padding: 14px; margin-top: 12px; }
+  .ai-result-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .ai-result-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .ai-result-item:last-child { border-bottom: none; }
+  .ai-result-item .label { font-size: 11px; font-weight: 700; color: var(--text-tertiary); min-width: 75px; flex: 0 0 auto; padding-top: 2px; }
+  .ai-result-item .value { font-size: 13px; font-weight: 600; line-height: 1.5; }
+
+  /* === 配方 === */
+  .recipe-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; box-shadow: var(--shadow); }
+  .recipe-card .rname { font-size: 14px; font-weight: 800; }
+  .recipe-card .rmeta { font-size: 11px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
+  .recipe-card .rbody { font-size: 12px; line-height: 1.7; margin-top: 10px; white-space: pre-wrap; color: var(--text-secondary); }
+  .recipe-step { display: flex; gap: 8px; padding: 6px 0; }
+  .recipe-step .sn { width: 22px; height: 22px; border-radius: 7px; flex: 0 0 auto; display: grid; place-items: center; font-size: 11px; font-weight: 800; background: var(--accent-light); color: var(--accent); flex-shrink: 0; }
+  .recipe-step .st { font-size: 12px; line-height: 1.5; padding-top: 2px; }
+  .safety-box { background: #fff4e6; border: 1px solid #ffd9a3; border-radius: var(--radius); padding: 12px 14px; }
+  .safety-box .title { font-size: 12px; font-weight: 800; color: var(--yellow); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .safety-box .item { font-size: 12px; line-height: 1.7; color: var(--text-secondary); }
+
+  /* === 笔记 === */
+  .note-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); }
+  .note-card .ntitle { font-size: 14px; font-weight: 800; }
+  .note-card .nmeta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 7px; }
+  .note-card .nmeta .chip { font-size: 10px; padding: 2px 7px; border-radius: 6px; background: var(--surface-nested); color: var(--text-secondary); }
+  .note-card .nbody { font-size: 12px; line-height: 1.7; margin-top: 8px; color: var(--text-secondary); white-space: pre-wrap; }
+  .note-card .ndate { font-size: 10px; color: var(--text-tertiary); margin-top: 7px; }
+  .note-card .nquote { font-size: 12px; line-height: 1.7; margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: var(--surface-nested); border-left: 3px solid var(--accent); color: var(--text-secondary); white-space: pre-wrap; }
+  .note-card .nquote .qlabel { font-size: 10px; font-weight: 700; color: var(--accent); display: block; margin-bottom: 3px; }
+  .note-card .nstar { font-size: 12px; margin-top: 8px; padding: 7px 10px; border-radius: 8px; background: #fff8e8; }
+  .note-card .nstar .slabel { font-size: 10px; font-weight: 700; color: var(--yellow); }
+
+  /* === 引导卡片 === */
+  .guide-box { background: linear-gradient(135deg, var(--purple-light), #f5f0fa); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 12px; border: 1px solid #ddd0ed; }
+  .guide-box .gtitle { font-size: 13px; font-weight: 800; color: var(--purple); margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
+  .guide-box .gtip { font-size: 12px; color: var(--text-secondary); line-height: 1.65; }
+  .guide-box .gtip b { color: var(--text); }
+
+  /* === 材料清单 === */
+  .mat-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .mat-section { padding: 12px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-nested); }
+  .mat-section .mlabel { font-size: 12px; font-weight: 800; margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
+  .mat-section .mitem { font-size: 12px; line-height: 1.8; color: var(--text-secondary); padding: 2px 0; display: flex; align-items: center; gap: 6px; }
+  .mat-section .mitem::before { content: '▸'; color: var(--accent); font-size: 11px; flex: 0 0 auto; }
+  .mat-prep { margin-top: 10px; padding: 10px 12px; border-radius: var(--radius); background: #fff8e8; border: 1px solid #ffe5a3; font-size: 12px; line-height: 1.6; color: var(--text-secondary); display: flex; gap: 7px; align-items: flex-start; }
+  .mat-prep .picon { font-size: 15px; flex: 0 0 auto; line-height: 1.4; }
+  .prompt-bubble { background: var(--surface-nested); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.55; display: flex; gap: 7px; align-items: flex-start; }
+  .prompt-bubble .bemoji { flex: 0 0 auto; font-size: 15px; line-height: 1.4; }
+  .prompt-bubble .btext { flex: 1; }
+  .prompt-bubble .btext b { color: var(--accent); }
+
+  /* === 标签设计 === */
+  .label-preview { width: 150px; height: 210px; border-radius: 14px; border: 2px dashed var(--border-input); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: var(--surface-nested); margin: 0 auto 14px; }
+  .label-preview .bottle { font-size: 42px; }
+  .label-preview .lname { font-size: 15px; font-weight: 800; color: var(--accent); }
+  .label-preview .ltype { font-size: 10px; color: var(--text-secondary); }
+  .label-preview .ldeco { font-size: 13px; }
+
+  /* === 弹窗 === */
+  .overlay { position: fixed; inset: 0; background: rgba(74,63,53,.45); backdrop-filter: blur(3px); z-index: 100; display: flex; align-items: flex-end; justify-content: center; animation: fade .16s ease; }
+  @keyframes fade { from { opacity: 0; } }
+  .modal { background: var(--surface-card); border-radius: 20px 20px 0 0; padding: 20px 18px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 -8px 30px rgba(0,0,0,.15); animation: slideUp .22s cubic-bezier(.2,.8,.3,1); -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--safe-bottom) + 20px); }
+  @keyframes slideUp { from { transform: translateY(30px); opacity: .6; } }
+  .modal .drag-handle { width: 36px; height: 4px; background: var(--border-input); border-radius: 999px; margin: 0 auto 14px; }
+  .modal h3 { font-size: 18px; font-weight: 800; }
+  .modal .sub { color: var(--text-secondary); font-size: 12px; margin: 4px 0 14px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; color: var(--text-secondary); font-size: 12px; margin-bottom: 5px; font-weight: 600; }
+  .frow { display: flex; gap: 10px; flex-wrap: wrap; } .frow .field { flex: 1 1 140px; }
+  .modal-actions { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
+  .modal-actions .btn { flex: 1; }
+
+  /* === 进度条 === */
+  .progress-bar { width: 100%; height: 7px; border-radius: 999px; background: var(--border); overflow: hidden; margin-bottom: 16px; }
+  .progress-bar .fill { height: 100%; border-radius: 999px; transition: width .3s; }
+
+  /* === 空状态 === */
+  .empty { text-align: center; color: var(--text-secondary); padding: 24px 16px; }
+  .empty .icon { font-size: 32px; margin-bottom: 6px; }
+  .empty .desc { font-size: 13px; }
+
+  /* === 小工具 === */
+  .spacer { flex: 1; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; background: var(--surface-nested); color: var(--text-secondary); }
+  .acts { display: flex; gap: 3px; align-items: center; }
+  .acts button { border: none; background: transparent; color: var(--text-tertiary); cursor: pointer; width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; transition: all .15s; font-size: 13px; flex-shrink: 0; }
+  .acts button:active { background: var(--surface-nested); color: var(--text); }
+  .acts .del:active { background: #fce8e4; color: var(--danger); }
+
+  /* === 导航操作区 === */
+  .nav-actions { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .nav-actions .btn { flex: 1 1 120px; }
+
+  /* === Toast === */
+  .toast {
+    position: fixed; left: 50%; bottom: calc(var(--safe-bottom) + 40px);
+    transform: translateX(-50%) translateY(20px);
+    background: #4a3f35; color: #fff;
+    padding: 12px 20px; border-radius: 12px;
+    font-size: 13px; z-index: 9999;
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
+    max-width: 92vw; opacity: 0;
+    transition: opacity .22s ease, transform .22s ease;
+    pointer-events: none; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* === PDF 预览页专用样式 === */
+  #pdf-body { background: #fbf8f3; }
+  #pdf-body .toolbar { position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.08);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap; }
+  #pdf-body .toolbar h1 { font-size:16px;margin:0;color:#7a4f2e;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  #pdf-body .page { max-width:820px;margin:16px auto 40px;padding:20px 18px;background:#fff;border:1px solid #eadfc9;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.06); }
+  #pdf-body .hero { padding:20px 18px;border-radius:14px;background:linear-gradient(135deg,#f9ecd7 0%,#e5c5d5 50%,#dde0ee 100%);color:#4a3018;text-align:center;margin-bottom:20px; }
+  #pdf-body .hero h2 { margin:0 0 6px;font-size:22px;letter-spacing:1px; }
+  #pdf-body .hero .sub { opacity:.8;font-size:12px; }
+  #pdf-body .hero .meta { margin-top:12px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;font-size:11px; }
+  #pdf-body .hero .meta span { padding:3px 9px;background:rgba(255,255,255,.55);border-radius:10px; }
+  #pdf-body .stats { display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0 18px; }
+  #pdf-body .stat { padding:11px;border-radius:10px;text-align:center;font-size:11px;color:#666; }
+  #pdf-body .stat:nth-child(1) { background:#e4f2e0; } .stat:nth-child(2) { background:#fde7d6; } .stat:nth-child(3) { background:#ede4f5; } .stat:nth-child(4) { background:#f8e0ea; }
+  #pdf-body .stat b { display:block;font-size:20px;color:#333;margin:2px 0 4px; }
+  #pdf-body .section { margin:18px 0; }
+  #pdf-body h3 { font-size:16px;color:#5a3e1b;border-bottom:2px solid #e5c9a0;padding-bottom:5px;margin:20px 0 10px; }
+  #pdf-body h3::before { content:"";display:inline-block;width:5px;height:14px;background:#9a7ab5;border-radius:3px;margin-right:7px;vertical-align:-2px; }
+  #pdf-body .bar-pct { height:12px;background:#f1ece0;border-radius:7px;overflow:hidden;margin:5px 0 8px; }
+  #pdf-body .bar-pct > i { display:block;height:100%;background:linear-gradient(90deg,#6ba368,#9a7ab5); }
+  #pdf-body .weeks-bar { padding:8px 10px;background:#faf6ef;border-radius:10px;font-size:0;margin:6px 0 3px; }
+  #pdf-body .tips { background:#fff8eb;border-left:4px solid #e0a93b;padding:9px 12px;border-radius:6px;font-size:11px;color:#7a5a2a;margin:10px 0;line-height:1.6; }
+
+  /* === 平板+ 适配 === */
+  @media (min-width: 640px) {
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .mat-grid { grid-template-columns: 1fr 1fr; }
+    #pdf-body .stats { grid-template-columns: repeat(4,1fr); }
+    #pdf-body .page { padding: 28px 32px; }
+    .main { padding: 24px 28px 48px; }
+  }
+
+  /* === 桌面端侧边栏常驻 === */
+  @media (min-width: 900px) {
+    .topbar { display: none; }
+    .sidebar { transform: translateX(0); width: var(--sidebar-w); position: fixed; }
+    .sidebar .close-btn { display: none; }
+    .drawer-overlay { display: none; }
+    .main { margin-left: var(--sidebar-w); padding: 28px 32px 48px; max-width: calc(100% - var(--sidebar-w)); }
+    body { padding-top: 0; }
+    .modal { border-radius: 20px; max-width: 600px; margin: auto; align-self: center; }
+    .overlay { align-items: center; }
+  }
+
+  @media print {
+    #pdf-body { background:#fff; }
+    #pdf-body .toolbar { display:none !important; }
+    #pdf-body .page { box-shadow:none;border:none;margin:0 auto;padding:16px 10px;max-width:100%; }
+    #pdf-body .section { page-break-inside:avoid; }
+    @page { size:A4; margin:14mm 12mm; }
+    #pdf-body h3 { page-break-after:avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 移动端顶栏 -->
+<div class="topbar" id="topbar">
+  <button class="menu-btn" id="openMenu" aria-label="打开菜单">☰</button>
+  <div class="brand-text">
+    <h1>🌸 气味档案室</h1>
+    <p>AI 香氛课程工作台</p>
+  </div>
+  <div class="save-badge" id="saveBadge">✓ 已保存</div>
+</div>
+
+<!-- 侧边栏遮罩 -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- 侧边栏 -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="logo">🌸</div>
+    <div>
+      <h1>气味档案室</h1>
+      <p>AI 香氛课程工作台</p>
+    </div>
+    <button class="close-btn" id="closeMenu" aria-label="关闭菜单">✕</button>
+  </div>
+  <div class="nav-title">16周课程</div>
+  <div class="nav" id="nav"></div>
+  <div class="data-title">☁️ 云端同步（跨设备）</div>
+  <div class="data-menu" style="flex-direction:column;gap:6px;align-items:stretch;">
+    <div id="syncStatus" style="font-size:11px;color:#aaa;padding:3px 8px;background:rgba(255,255,255,.05);border-radius:6px;word-break:break-all;">未开启</div>
+    <button class="data-btn" id="btnSyncSetup"><span class="bic">☁️</span> 开启 / 设置同步</button>
+    <button class="data-btn" id="btnSyncNow" style="display:none;"><span class="bic">🔄</span> 立即同步</button>
+  </div>
+  <div class="data-title">💾 数据管理</div>
+  <div class="data-menu">
+    <button class="data-btn" id="btnExport"><span class="bic">📤</span> 导出笔记/配方</button>
+    <button class="data-btn" id="btnImport"><span class="bic">📥</span> 导入同学数据<input type="file" id="importFile" accept=".json" style="display:none"></button>
+    <button class="data-btn" id="btnSaveHTML"><span class="bic">🌐</span> 另存为（含数据）</button>
+    <button class="data-btn" id="btnPDF" style="color:var(--purple-light);"><span class="bic">📄</span> 个人学习档案（PDF）</button>
+    <button class="data-btn" id="btnClear" style="color:#ffb3a8;"><span class="bic">🗑</span> 清空全部数据</button>
+  </div>
+  <div class="foot">五年级校本课程 · AI辅助教学</div>
+</aside>
+
+<!-- 主区域 -->
+<div class="main">
+  <div id="screen"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   CONFIG - 16 周完整课程数据
+   ============================================================ */
+const CONFIG = {
+  storageKey: "scent-archive-mobile-v1",
+
+  weeks: [
+    { week: 1, emoji: "👃", title: "认识我们的鼻子", color: "#6ba368", bg: "#e4f2e0",
+      desc: "了解嗅觉系统，建立气味档案的概念",
+      goals: ["了解鼻子是怎么闻到气味的", "认识「气味档案室」是什么", "学会用词语描述闻到的气味"],
+      materials: { tools: ["小碟子 ×6", "棉签 ×20", "标签纸 ×30", "记号笔 ×5"], materials: ["柠檬皮（新鲜）", "薄荷叶（新鲜）", "香水少量", "橙皮", "咖啡粉", "茶叶"], prep: "提前将每种物品放在小碟子上，贴好标签" },
+      tasks: [
+        { text: "闻一闻桌上的3种物品", hint: "柠檬皮 / 薄荷叶 / 棉花蘸香水" },
+        { text: "用3个词语描述每种气味", hint: "比如：清新的、甜甜的、刺鼻的" },
+        { text: "写下你的第一份气味笔记", hint: "点击下方「香气笔记」记录" }
+      ], tools: ["note"] },
+    { week: 2, emoji: "🌿", title: "建立天然香调", color: "#5a8dc4", bg: "#dde9f5",
+      desc: "学习常见天然香料，构建香调基础知识",
+      goals: ["认识5种以上天然香料", "了解香料来自植物的不同部位", "能区分花、叶、果、木的气味"],
+      materials: { tools: ["小碟子 ×6", "放大镜 ×5", "分类记录卡 ×30", "标签纸"], materials: ["玫瑰花瓣（干）", "薄荷叶（干）", "柠檬皮", "檀木屑", "薰衣草（干）", "橙皮（干）"], prep: "将干燥香料提前分装在小碟中，每种约5克" },
+      tasks: [
+        { text: "观察并闻识别6种天然香料", hint: "玫瑰花瓣 / 薄荷叶 / 柠檬皮 / 檀木屑 / 薰衣草 / 橙皮" },
+        { text: "把香料按来源分类", hint: "花类 / 叶类 / 果类 / 木类" },
+        { text: "记录每种香料的气味特点", hint: "在笔记中记录" }
+      ], tools: ["note"] },
+    { week: 3, emoji: "🔺", title: "气味金字塔", color: "#e0a93b", bg: "#fdf2dd",
+      desc: "学习香气三层结构：前调、中调、尾调",
+      goals: ["理解前调、中调、尾调的概念", "知道每层常用的香料", "能画出简单的气味金字塔"],
+      materials: { tools: ["闻香纸条 ×30", "小碟子 ×3", "金字塔模板纸 ×30", "彩色笔"], materials: ["柠檬精油（前调）", "玫瑰精油（中调）", "檀香精油（尾调）"], prep: "在闻香纸条上分别滴1滴精油，编号标注，提前10分钟准备" },
+      tasks: [
+        { text: "听老师讲解气味金字塔", hint: "前调=第一印象 / 中调=核心香气 / 尾调=留香记忆" },
+        { text: "体验三种层次的香气", hint: "柠檬(前) → 玫瑰(中) → 檀香(尾)" },
+        { text: "画一个气味金字塔图", hint: "标注每层对应的香料" }
+      ], tools: ["note"] },
+    { week: 4, emoji: "🌹", title: "复刻温柔花香", color: "#d47a9e", bg: "#f8e0ea",
+      desc: "以玫瑰为例，学习单花香调的调配",
+      goals: ["了解玫瑰香调的组成", "学习调配单花香精的基本方法", "完成一次花香调配尝试"],
+      materials: { tools: ["调配瓶（5ml棕色）×30", "滴管 ×30", "量杯 ×5", "标签纸 ×30", "一次性手套"], materials: ["玫瑰精油", "茉莉精油", "檀香精油", "基础油（荷荷巴油）"], prep: "每桌备好4种精油各1瓶、基础油1瓶（约20ml），确保滴管通畅" },
+      tasks: [
+        { text: "分析玫瑰花的香气层次", hint: "前调/中调/尾调分别是什么？" },
+        { text: "准备调配材料", hint: "玫瑰精油、茉莉精油、檀香精油、基础油" },
+        { text: "按照配方调配", hint: "查看下方「调配配方」" },
+        { text: "记录调配过程", hint: "在笔记中写下感受" }
+      ], tools: ["note", "recipe"] },
+    { week: 5, emoji: "🍊", title: "柑橘复合调香", color: "#e0a93b", bg: "#fdf2dd",
+      desc: "学习柑橘类香料的特性与复合调配",
+      goals: ["了解柑橘类香料的特点", "学习两种以上香料的复合调配", "调配一款柑橘清香"],
+      materials: { tools: ["调配瓶 ×30", "滴管 ×30", "量杯 ×5", "标签纸 ×30", "一次性手套"], materials: ["柠檬精油", "薄荷精油", "雪松精油", "基础油"], prep: "柑橘类精油易挥发，课前开封即可，注意密封" },
+      tasks: [
+        { text: "闻识别3种柑橘类香料", hint: "柠檬 / 甜橙 / 葡萄柚" },
+        { text: "设计柑橘复合配方", hint: "柠檬+薄荷+雪松" },
+        { text: "按配方调配", hint: "查看下方配方指导" },
+        { text: "与同学交换闻香评价", hint: "记录同学的评价" }
+      ], tools: ["note", "recipe"] },
+    { week: 6, emoji: "🪵", title: "木质定香学习", color: "#8a7a68", bg: "#f0e8de",
+      desc: "学习木质调香料和定香剂的作用",
+      goals: ["认识木质调香料（檀香、雪松等）", "理解定香剂的作用", "完成木质调调配"],
+      materials: { tools: ["调配瓶 ×30", "滴管 ×30", "量杯 ×5", "闻香纸条 ×30", "计时器"], materials: ["檀香精油", "雪松精油", "广藿香精油", "基础油"], prep: "木质精油较浓稠，提前检查滴管是否堵塞" },
+      tasks: [
+        { text: "体验木质香的温暖感", hint: "檀香 / 雪松 / 柏木" },
+        { text: "学习定香剂的作用", hint: "让香气更持久的关键" },
+        { text: "调配木质调香精", hint: "查看配方指导" },
+        { text: "对比有无定香剂的区别", hint: "记录两种的留香时间" }
+      ], tools: ["note", "recipe"] },
+    { week: 7, emoji: "✨", title: "AI气味顾问：构思香气主题", color: "#9a7ab5", bg: "#ede4f5", aiSupport: true,
+      desc: "使用AI辅助，构思属于自己的香气主题",
+      goals: ["学会用词语描述想要的气味", "让AI帮助分析香调方向", "确定个人香气主题"],
+      materials: { tools: ["手机/平板（每组1台）", "笔记本", "笔"], materials: ["前几周的气味笔记（回顾用）"], prep: "确保设备联网" },
+      tasks: [
+        { text: "想想你最想创造什么气味", hint: "比如：雨后花园、冬日暖阳、夏日海边" },
+        { text: "用AI助手分析你的想法", hint: "在下方AI工具中描述你的气味" },
+        { text: "查看AI分析的主香调和成分", hint: "理解AI给出的建议" },
+        { text: "确定你的香气主题名称", hint: "给作品起个好听的名字" }
+      ], tools: ["note", "ai"] },
+    { week: 8, emoji: "🧪", title: "AI拆解香调：完善配方", color: "#9a7ab5", bg: "#ede4f5", aiSupport: true,
+      desc: "用AI分析并完善你的调香配方",
+      goals: ["用AI细化前中尾调的成分", "确定每种材料的用量", "生成完整调配方案"],
+      materials: { tools: ["手机/平板", "调配瓶 ×30", "滴管 ×30", "量杯 ×5", "标签纸"], materials: ["根据AI分析结果准备对应精油", "基础油"], prep: "根据学生上周AI分析结果，提前采购对应精油种类" },
+      tasks: [
+        { text: "回顾上周的香气主题", hint: "打开你的气味档案" },
+        { text: "用AI工具分析具体成分", hint: "描述主题，AI给出三层建议" },
+        { text: "确定材料清单和用量", hint: "记录到配方中" },
+        { text: "保存为正式配方", hint: "点击「保存为档案」" }
+      ], tools: ["note", "ai", "recipe"] },
+    { week: 9, emoji: "🌶", title: "暖香记忆：东方香料", color: "#d4794a", bg: "#fce8db",
+      desc: "了解东方香料特点，调配暖调香氛",
+      goals: ["认识东方调香料（肉桂、丁香等）", "理解暖调香氛的特点", "调配一款暖调香精"],
+      materials: { tools: ["调配瓶 ×30", "滴管 ×30", "量杯 ×5", "闻香纸条 ×30", "一次性手套"], materials: ["肉桂精油", "丁香精油", "橙花精油", "檀香精油", "基础油"], prep: "东方香料气味浓郁，提前通风，提醒学生少量使用" },
+      tasks: [
+        { text: "闻体验东方香料", hint: "肉桂 / 丁香 / 豆蔻" },
+        { text: "设计暖调配方", hint: "肉桂+丁香+檀香" },
+        { text: "调配并记录", hint: "注意用量，东方香料气味浓" },
+        { text: "记录气味让你想到的记忆", hint: "在笔记中写下联想" }
+      ], tools: ["note", "recipe"] },
+    { week: 10, emoji: "❄️", title: "清冷秘境：矿物感香型", color: "#5a8dc4", bg: "#dde9f5",
+      desc: "探索矿石类香料，创新清冷感香型",
+      goals: ["了解矿物感香料的概念", "学习创新香型的方法", "调配一款清冷感香精"],
+      materials: { tools: ["调配瓶 ×30", "滴管 ×30", "量杯 ×5", "海盐（少量）", "一次性手套"], materials: ["薄荷精油", "雪松精油", "海盐微量", "基础油"], prep: "准备微量海盐供学生体验矿物感" },
+      tasks: [
+        { text: "了解矿物感香气的特点", hint: "像雨后石头、海风的感觉" },
+        { text: "设计创新配方", hint: "海盐+薄荷+雪松" },
+        { text: "调配并记录", hint: "尝试不同的比例" },
+        { text: "给香氛取个有创意的名字", hint: "记录到档案中" }
+      ], tools: ["note", "recipe"] },
+    { week: 11, emoji: "🎨", title: "气味手账设计", color: "#9a7ab5", bg: "#ede4f5", aiSupport: true,
+      desc: "设计香氛瓶身标签与插画",
+      goals: ["学习标签设计的基本要素", "用AI辅助生成标签方案", "完成个人香氛标签设计"],
+      materials: { tools: ["手机/平板", "彩色卡纸 ×30", "剪刀 ×10", "彩色笔/马克笔", "双面胶", "空瓶（展示用）×30"], materials: ["打印好的标签模板", "彩带/麻绳（装饰用）"], prep: "准备不同形状的标签模板供学生参考" },
+      tasks: [
+        { text: "观察不同香水瓶的标签设计", hint: "注意颜色、字体、图案的搭配" },
+        { text: "选择瓶型和配色方案", hint: "在下方「标签设计」中操作" },
+        { text: "设计装饰元素", hint: "花瓣藤蔓 / 几何线条 / 自然元素" },
+        { text: "预览并保存标签", hint: "保存后可以打印使用" }
+      ], tools: ["note", "label"] },
+    { week: 12, emoji: "🏆", title: "专属香气：定稿试调", color: "#9a7ab5", bg: "#ede4f5", aiSupport: true,
+      desc: "最终确定个人专属香气配方，完成试调",
+      goals: ["整合所学确定最终配方", "完成正式调配", "记录调配全过程"],
+      materials: { tools: ["调配瓶 ×30", "滴管 ×30", "量杯 ×5", "搅拌棒 ×10", "一次性手套", "围裙"], materials: ["学生各自配方所需精油", "基础油", "无水酒精（可选）"], prep: "提前收集学生最终配方，确保所需精油齐全" },
+      tasks: [
+        { text: "回顾所有配方和笔记", hint: "选择你最满意的方向" },
+        { text: "用AI检查配方合理性", hint: "描述配方让AI给建议" },
+        { text: "确定最终配方并记录", hint: "保存为「最终配方」" },
+        { text: "完成正式调配", hint: "按照配方仔细操作" }
+      ], tools: ["note", "ai", "recipe"] },
+    { week: 13, emoji: "📦", title: "成品工坊：分装保存", color: "#9a7ab5", bg: "#ede4f5", aiSupport: true,
+      desc: "分装、保存、贴标签的完整流程",
+      goals: ["学习香氛分装的正确方法", "了解保存注意事项", "完成贴标签和成品展示"],
+      materials: { tools: ["避光玻璃分装瓶（10ml）×30", "小漏斗 ×5", "滴管 ×10", "上周设计的标签", "封口膜"], materials: ["学生各自调配的香精", "干燥剂包（可选）"], prep: "提前清洗并晾干分装瓶，准备标签打印件" },
+      tasks: [
+        { text: "准备分装工具", hint: "避光玻璃瓶、滴管、标签纸" },
+        { text: "将香精分装到个人瓶中", hint: "注意卫生和密封" },
+        { text: "贴上设计的标签", hint: "使用上周设计的标签" },
+        { text: "记录保存注意事项", hint: "避光、阴凉处保存" }
+      ], tools: ["note", "label"] },
+    { week: 14, emoji: "✍️", title: "香气文字：撰写解说", color: "#9a7ab5", bg: "#ede4f5", aiSupport: true,
+      desc: "为自己的香氛撰写解说文案",
+      goals: ["学习气味描述的写作技巧", "用AI辅助润色文案", "完成香氛解说卡片"],
+      materials: { tools: ["手机/平板", "卡片纸 ×30", "彩色笔", "丝带/装饰物"], materials: ["学生各自香氛成品（展示用）"], prep: "准备优美的香氛文案范例供学生参考" },
+      tasks: [
+        { text: "回顾你的香气创作历程", hint: "从灵感到成品的完整故事" },
+        { text: "写下香氛的名称和简介", hint: "名字、香调、灵感来源" },
+        { text: "描述香气特点和适合场景", hint: "前中尾调的变化" },
+        { text: "用AI帮你润色文案", hint: "让文字更优美" }
+      ], tools: ["note", "ai"] },
+    { week: 15, emoji: "🏛", title: "气味展厅：班级策展", color: "#6ba368", bg: "#e4f2e0",
+      desc: "布置班级香氛展厅，准备展示",
+      goals: ["学习展览策划的基本方法", "参与班级展厅布置", "准备展示材料"],
+      materials: { tools: ["展示桌 ×5", "桌布", "展板 ×3", "双面胶/图钉", "名牌 ×30"], materials: ["学生香氛成品", "解说卡片", "装饰花卉/绿植"], prep: "提前规划展厅布局，划分展示区和体验区" },
+      tasks: [
+        { text: "分组讨论展厅布局", hint: "展示区 / 体验区 / 介绍区" },
+        { text: "布置展示台", hint: "摆放香氛瓶、标签、解说卡" },
+        { text: "准备口头介绍内容", hint: "练习讲解你的作品" },
+        { text: "互相参观提建议", hint: "记录同学的反馈" }
+      ], tools: ["note"] },
+    { week: 16, emoji: "🎉", title: "气味笔记分享会", color: "#d47a9e", bg: "#f8e0ea",
+      desc: "分享与展示课程成果，结课总结",
+      goals: ["分享个人香气作品", "回顾16周学习历程", "完成课程总结"],
+      materials: { tools: ["展示桌", "音响/话筒", "评价卡 ×30", "纪念证书 ×30"], materials: ["学生香氛成品", "气味笔记本", "拍照背景板"], prep: "准备结课证书和分享环节流程" },
+      tasks: [
+        { text: "每人展示自己的香氛作品", hint: "名称、香调、创作故事" },
+        { text: "分享气味笔记中最喜欢的记录", hint: "朗读一段你的笔记" },
+        { text: "互相评价和感谢", hint: "给同学写一句评语" },
+        { text: "完成课程总结", hint: "写下你最大的收获" }
+      ], tools: ["note"] },
+  ]
+};
+
+const $ = s => document.querySelector(s);
+const esc = s => { if(!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+const attr = s => (s || '').replace(/"/g, '&quot;');
+const isoToday = () => new Date().toISOString().slice(0, 10);
+
+/* ========== 存储与自动保存 ========== */
+const store = {
+  load() {
+    try {
+      const raw = localStorage.getItem(CONFIG.storageKey);
+      if(raw) return JSON.parse(raw);
+    } catch(e){}
+    return { notes: [], recipes: [], fragrances: [], labels: [], completedWeeks: {}, taskProgress: {}, currentWeek: 1 };
+  },
+  save() {
+    try {
+      localStorage.setItem(CONFIG.storageKey, JSON.stringify(data));
+      flashSaved();
+    } catch(e) { console.warn('保存失败', e); }
+  }
+};
+
+let data = store.load();
+let currentWeek = data.currentWeek || 1;
+let _saveTimer = null;
+
+/* ========== 云端同步（GitHub Gist，跨设备自动同步） ========== */
+const SYNC = {
+  tokenKey: 'scent-github-token',
+  gistKey: 'scent-gist-id',
+  api: 'https://api.github.com',
+  marker: 'scent-archive-sync-v1',
+  file: 'scent-data.json',
+  pushTimer: null,
+  getToken() { return localStorage.getItem(this.tokenKey) || ''; },
+  getGistId() { return localStorage.getItem(this.gistKey) || ''; },
+  setToken(t) { t ? localStorage.setItem(this.tokenKey, t) : localStorage.removeItem(this.tokenKey); },
+  setGistId(g) { g ? localStorage.setItem(this.gistKey, g) : localStorage.removeItem(this.gistKey); },
+  _hdr(token, extra) { return Object.assign({ 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json' }, extra||{}); },
+  async findGist(token) {
+    const res = await fetch(this.api + '/gists?per_page=100', { headers: this._hdr(token) });
+    if (res.status === 401) throw new Error('Token 无效或已过期');
+    if (!res.ok) throw new Error('网络错误 (' + res.status + ')');
+    const list = await res.json();
+    return list.find(g => g.description === this.marker);
+  },
+  async createGist(token, dataStr) {
+    const res = await fetch(this.api + '/gists', { method:'POST', headers: this._hdr(token, {'Content-Type':'application/json'}),
+      body: JSON.stringify({ description: this.marker, public: false, files: { [this.file]: { content: dataStr } } }) });
+    if (!res.ok) throw new Error('创建云端仓库失败 (' + res.status + ')');
+    const g = await res.json(); return g.id;
+  },
+  async pullGist(token, gistId) {
+    const res = await fetch(this.api + '/gists/' + gistId, { headers: this._hdr(token) });
+    if (!res.ok) throw new Error('读取云端失败 (' + res.status + ')');
+    const g = await res.json();
+    const f = g.files && g.files[this.file];
+    if (!f || !f.content) return null;
+    try { return JSON.parse(f.content); } catch(e) { return null; }
+  },
+  async pushGist(token, gistId, dataStr) {
+    const res = await fetch(this.api + '/gists/' + gistId, { method:'PATCH', headers: this._hdr(token, {'Content-Type':'application/json'}),
+      body: JSON.stringify({ files: { [this.file]: { content: dataStr } } }) });
+    if (!res.ok) throw new Error('上传失败 (' + res.status + ')');
+  },
+  snap() { return Object.assign({}, data, { _t: Date.now() }); },
+  async push(force) {
+    const token = this.getToken(); if(!token) return;
+    clearTimeout(this.pushTimer);
+    this.pushTimer = setTimeout(async () => {
+      let gistId = this.getGistId();
+      try {
+        this.setUI('⏳ 上传中…');
+        if (!gistId) { const found = await this.findGist(token); if (found) { gistId = found.id; this.setGistId(gistId); } }
+        const dataStr = JSON.stringify(this.snap());
+        if (!gistId) { gistId = await this.createGist(token, dataStr); this.setGistId(gistId); }
+        else { await this.pushGist(token, gistId, dataStr); }
+        this.setUI('✓ 已同步 ' + new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}));
+      } catch(e) { this.setUI('⚠ 上传失败：' + e.message); }
+    }, force ? 0 : 2500);
+  },
+  async pull(silent) {
+    const token = this.getToken(); if(!token) return;
+    let gistId = this.getGistId();
+    try {
+      if(!silent) this.setUI('⏳ 拉取中…');
+      if (!gistId) { const found = await this.findGist(token); if (!found) { if(!silent) this.setUI('ℹ️ 云端无数据'); return; } gistId = found.id; this.setGistId(gistId); }
+      const cloud = await this.pullGist(token, gistId);
+      if (!cloud) { if(!silent) this.setUI('ℹ️ 云端暂无数据'); return; }
+      const localT = (typeof data._t === 'number') ? data._t : 0;
+      if ((cloud._t || 0) > localT) {
+        Object.keys(cloud).forEach(k => { if(k !== '_t') data[k] = cloud[k]; });
+        data._t = cloud._t;
+        currentWeek = data.currentWeek || 1;
+        localStorage.setItem(CONFIG.storageKey, JSON.stringify(data));
+        render();
+        this.setUI('✓ 已拉取云端 ' + new Date((cloud._t||Date.now())).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}));
+      } else if(!silent) { this.setUI('✓ 本地已是最新'); }
+    } catch(e) { if(!silent) this.setUI('⚠ 拉取失败：' + e.message); }
+  },
+  setup() {
+    const token = this.getToken(), gistId = this.getGistId();
+    const ov = document.createElement('div'); ov.className = 'overlay';
+    ov.innerHTML = '<div class="modal" style="max-width:460px;">'
+      + '<div style="font-size:14px;line-height:1.6;color:#e8e8ec;"><b style="font-size:17px;">☁️ 开启跨设备云同步</b><br><span style="color:#aaa;font-size:12px;">数据自动保存到你的 GitHub Gist（私密），换设备登录相同 Token 即可同步。</span></div>'
+      + '<div style="margin:14px 0 6px;font-size:12px;color:#9a8fbf;font-weight:600;">第 1 步 · 获取 GitHub Token</div>'
+      + '<ol style="font-size:12px;color:#bbb;margin:0 0 0 18px;padding:0;line-height:1.8;"><li>打开 <a href="https://github.com/settings/tokens/new?scopes=gist&description=scent-archive-sync" target="_blank" style="color:#9a8fbf;">github.com/settings/tokens</a>（需登录 GitHub）</li><li>勾选权限 <code style="background:#2a2a2e;padding:1px 5px;border-radius:3px;">gist</code>（仅需此项）</li><li>点底部 <b style="color:#e8e8ec;">Generate token</b> → 复制生成的字符串</li></ol>'
+      + '<div style="margin:14px 0 6px;font-size:12px;color:#9a8fbf;font-weight:600;">第 2 步 · 粘贴 Token</div>'
+      + '<input id="syncTokenInput" type="text" placeholder="ghp_xxxxxxxxxxxx" value="' + attr(token) + '" style="width:100%;box-sizing:border-box;padding:10px;background:#1f1f23;border:1px solid #3a3a40;color:#e8e8ec;border-radius:8px;font-size:13px;font-family:monospace;" autocomplete="off">'
+      + '<div style="margin:12px 0 6px;font-size:12px;color:#9a8fbf;font-weight:600;">第 3 步 · 同步码（换设备时填，首次留空）</div>'
+      + '<input id="syncGistInput" type="text" placeholder="留空自动创建新仓库" value="' + attr(gistId) + '" style="width:100%;box-sizing:border-box;padding:10px;background:#1f1f23;border:1px solid #3a3a40;color:#e8e8ec;border-radius:8px;font-size:13px;font-family:monospace;" autocomplete="off">'
+      + '<div style="margin:12px 0 0;font-size:11px;color:#777;line-height:1.5;">🔒 Token 仅保存在本设备浏览器，不上传第三方。公共设备用完请关闭同步。</div>'
+      + '<div class="modal-actions" style="display:flex;gap:8px;margin-top:14px;"><button class="btn ghost" id="syncCancel" style="flex:1;">取消</button><button class="btn" id="syncSave" style="flex:2;">保存并连接</button></div>'
+      + '<div id="syncMsg" style="font-size:12px;color:#bbb;text-align:center;margin-top:8px;min-height:16px;"></div>'
+      + '</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', e => { if(e.target === ov) ov.remove(); });
+    ov.querySelector('#syncCancel').onclick = () => ov.remove();
+    ov.querySelector('#syncSave').onclick = async () => {
+      const t = ov.querySelector('#syncTokenInput').value.trim();
+      const g = ov.querySelector('#syncGistInput').value.trim();
+      const msg = ov.querySelector('#syncMsg');
+      if (!t) { msg.textContent = '⚠ 请输入 Token'; return; }
+      this.setToken(t); if (g !== gistId) this.setGistId(g);
+      msg.textContent = '⏳ 正在连接验证…';
+      try {
+        await this.findGist(t);
+        msg.textContent = '⏳ 正在同步数据…';
+        await this.pull(true); await this.push(true);
+        this.updateUI();
+        showToast('✓ 云同步已开启');
+        ov.remove();
+      } catch(e) {
+        msg.textContent = '⚠ ' + e.message;
+      }
+    };
+  },
+  async syncNow() { if (!this.getToken()) { this.setup(); return; } this.setUI('⏳ 同步中…'); await this.pull(true); await this.push(true); },
+  async disable() { if (!confirm('关闭云同步？\n\n本设备数据保留，Token 和同步码将被清除。')) return; this.setToken(''); this.setGistId(''); this.updateUI(); showToast('已关闭云同步'); },
+  setUI(text) { const el = $('#syncStatus'); if (el) el.textContent = text; },
+  updateUI() {
+    const token = this.getToken(); const btnNow = $('#btnSyncNow'); const status = $('#syncStatus');
+    if (token) {
+      const gistId = this.getGistId();
+      if (btnNow) btnNow.style.display = '';
+      if (status) status.innerHTML = '✅ 已开启' + (gistId ? '<br><span style="color:#666;font-size:10px;">同步码：' + esc(gistId.slice(0,10)) + '…</span>' : '');
+    } else { if (btnNow) btnNow.style.display = 'none'; if (status) status.textContent = '未开启'; }
+  },
+  async init() { this.updateUI(); if (this.getToken()) { await this.pull(true); } }
+};
+function persist() {
+  // 防抖自动保存
+  const badge = $('#saveBadge');
+  if (badge) { badge.textContent = '⏳ 保存中...'; badge.classList.add('saving'); }
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => { store.save(); SYNC.push(); }, 350);
+}
+function flashSaved() {
+  const badge = $('#saveBadge');
+  if (!badge) return;
+  badge.textContent = '✓ 已保存';
+  badge.classList.remove('saving');
+  // 3秒后恢复正常
+  setTimeout(() => { badge.textContent = '✓ 已保存'; }, 0);
+}
+// 定期同步（应对某些浏览器场景）
+setInterval(() => { try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(data)); } catch(e){} }, 15000);
+
+/* ========== 侧边栏（抽屉）控制 ========== */
+const sidebar = $('#sidebar');
+const overlay = $('#drawerOverlay');
+function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('open'); }
+function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+$('#openMenu')?.addEventListener('click', openSidebar);
+$('#closeMenu')?.addEventListener('click', closeSidebar);
+overlay.addEventListener('click', closeSidebar);
+
+/* ========== 导航渲染 ========== */
+function renderNav() {
+  const nav = $('#nav');
+  nav.innerHTML = CONFIG.weeks.map(w => {
+    const done = data.completedWeeks[w.week];
+    const active = currentWeek === w.week;
+    return `<div class="week-item ${active?'active':''} ${done?'done':''}" data-week="${w.week}">
+      <div class="wnum">${done ? '✓' : w.week}</div>
+      <div class="wtext">
+        <div class="wtitle">${w.emoji} ${esc(w.title)}</div>
+        <div class="wdesc">${esc(w.desc)}</div>
+      </div>
+      ${w.aiSupport ? '<span class="ai-tag">AI</span>' : ''}
+    </div>`;
+  }).join('');
+  nav.querySelectorAll('[data-week]').forEach(el => {
+    el.onclick = () => { currentWeek = parseInt(el.dataset.week); data.currentWeek = currentWeek; persist(); render(); closeSidebar(); };
+  });
+}
+
+/* ========== 主渲染 ========== */
+function render() {
+  renderNav();
+  renderWeek();
+}
+
+function toggleTask(week, idx) {
+  const key = `week${week}`;
+  data.taskProgress[key] = data.taskProgress[key] || {};
+  data.taskProgress[key][idx] = !data.taskProgress[key][idx];
+  persist();
+  renderWeek();
+}
+
+function goWeek(n) {
+  if (n < 1 || n > 16) return;
+  currentWeek = n; data.currentWeek = n; persist(); render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function markWeekDone(week) {
+  data.completedWeeks[week] = true;
+  persist();
+  showToast('✓ 第' + week + '周已标记完成');
+  render();
+}
+
+function renderWeek() {
+  const w = CONFIG.weeks.find(x => x.week === currentWeek);
+  if(!w) return;
+  const done = data.completedWeeks[w.week];
+  const taskKey = `week${w.week}`;
+  const taskState = data.taskProgress[taskKey] || {};
+
+  const goalsHtml = w.goals.map((g, i) => `
+    <div class="goal-item">
+      <div class="check" style="background:${w.bg};color:${w.color};">${i+1}</div>
+      <div class="text">${esc(g)}</div>
+    </div>`).join('');
+
+  const tasksHtml = w.tasks.map((t, i) => {
+    const isDone = taskState[i];
+    return `<div class="task-item ${isDone?'done':''}" onclick="toggleTask(${w.week}, ${i})">
+      <div class="step-num" style="background:${isDone?'var(--green)':w.bg};color:${isDone?'#fff':w.color};">${isDone?'✓':i+1}</div>
+      <div>
+        <div class="step-text">${esc(t.text)}</div>
+        ${t.hint ? `<div class="step-hint">${esc(t.hint)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  const toolsHtml = (w.tools || []).map(tool => {
+    if(tool === 'ai') return renderAITool(w);
+    if(tool === 'recipe') return renderRecipeTool(w);
+    if(tool === 'label') return renderLabelTool(w);
+    return '';
+  }).join('');
+
+  const noteTool = w.tools.includes('note') ? renderNoteTool(w) : '';
+
+  const completedCount = Object.values(taskState).filter(Boolean).length;
+  const totalCount = w.tasks.length;
+  const progressPct = totalCount ? Math.round(completedCount / totalCount * 100) : 0;
+
+  $('#screen').innerHTML = `
+    <div class="course-header" style="background:${w.bg};">
+      <div class="emoji">${w.emoji}</div>
+      <div class="info">
+        <div class="week-label" style="color:${w.color};">第 ${w.week} 周 / 共 16 周</div>
+        <h2 style="color:${w.color};">${esc(w.title)}</h2>
+        <div class="desc">${esc(w.desc)}</div>
+        <div class="badge-area">
+          <span class="badge" style="background:${w.color};color:#fff;">${w.aiSupport ? '✨ AI 辅助' : '📚 常规课程'}</span>
+          <span class="badge">进度 ${progressPct}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-bar"><div class="fill" style="width:${progressPct}%;background:${w.color};"></div></div>
+
+    <div class="grid-2" style="margin-bottom:14px;">
+      <div class="card">
+        <div class="sec-title"><span class="emoji">🎯</span> 学习目标</div>
+        ${goalsHtml}
+      </div>
+      <div class="card">
+        <div class="sec-title"><span class="emoji">📋</span> 课堂任务</div>
+        <div class="task-list">${tasksHtml}</div>
+      </div>
+    </div>
+
+    ${w.materials ? renderMaterials(w) : ''}
+    ${toolsHtml}
+    ${noteTool}
+
+    <div class="nav-actions">
+      ${currentWeek > 1 ? `<button class="btn ghost" onclick="goWeek(${currentWeek - 1})">← 上一周</button>` : ''}
+      ${!done ? `<button class="btn green" onclick="markWeekDone(${w.week})">✓ 完成本周</button>` : `<span class="chip" style="background:var(--green-light);color:var(--green);flex:1;justify-content:center;display:inline-flex;padding:10px;">✓ 本周已完成</span>`}
+      ${currentWeek < 16 ? `<button class="btn" style="background:${w.color};" onclick="goWeek(${currentWeek + 1})">下一周 →</button>` : ''}
+    </div>
+  `;
+}
+
+/* ========== 材料清单 ========== */
+function renderMaterials(w) {
+  const m = w.materials; if(!m) return '';
+  return `<div class="card" style="margin-bottom:14px;">
+    <div class="sec-title"><span class="emoji">🎒</span> 课前准备</div>
+    <div class="mat-grid">
+      <div class="mat-section">
+        <div class="mlabel">🔧 工具清单</div>
+        ${m.tools.map(t => `<div class="mitem">${esc(t)}</div>`).join('')}
+      </div>
+      <div class="mat-section">
+        <div class="mlabel">🧴 材料清单</div>
+        ${m.materials.map(t => `<div class="mitem">${esc(t)}</div>`).join('')}
+      </div>
+    </div>
+    ${m.prep ? `<div class="mat-prep"><span class="picon">📌</span><div><b>老师准备：</b>${esc(m.prep)}</div></div>` : ''}
+  </div>`;
+}
+
+/* ========== 笔记工具 ========== */
+function renderNoteTool(w) {
+  const notes = (data.notes || []).filter(n => n.week === w.week);
+  const allNotes = data.notes || [];
+  const guides = getNoteGuides(w.week);
+
+  return `<div class="tool-section"><div class="tool-card">
+    <div class="sec-title">
+      <span class="emoji">📖</span> 香气笔记
+      <span class="spacer"></span>
+      <button class="btn ghost" style="padding:7px 13px;font-size:12px;" onclick="openNoteEditor(null, ${w.week})">+ 写笔记</button>
+    </div>
+    <div class="guide-box">
+      <div class="gtitle">✏️ 写笔记小提示</div>
+      <div class="gtip">${guides.intro}</div>
+    </div>
+    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">本周 ${notes.length} 条 · 总共 ${allNotes.length} 条</div>
+    ${notes.length === 0 ? `
+      <div class="empty"><div class="icon">📖</div><div class="desc">还没有笔记，记录你的气味体验吧！</div></div>
+      <div style="margin-top:10px;">
+        ${guides.prompts.map(p => `<div class="prompt-bubble"><span class="bemoji">${p.emoji}</span><span class="btext"><b>${p.title}</b> ${p.hint}</span></div>`).join('')}
+      </div>` :
+    notes.map(n => `
+      <div class="note-card" style="margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="ntitle">${esc(n.title)}</div>
+          <span class="spacer"></span>
+          <div class="acts">
+            <button onclick="editNote(${n.id})" title="编辑">✏️</button>
+            <button class="del" onclick="deleteNote(${n.id})" title="删除">🗑</button>
+          </div>
+        </div>
+        <div class="nmeta">
+          ${n.weather ? `<span class="chip">🌤 ${esc(n.weather)}</span>` : ''}
+          ${n.mood ? `<span class="chip">${getMoodEmoji(n.mood)} ${esc(n.mood)}</span>` : ''}
+          ${n.location ? `<span class="chip">📍 ${esc(n.location)}</span>` : ''}
+        </div>
+        ${n.nose ? `<div class="nquote"><span class="qlabel">👃 鼻子的第一感觉</span>${esc(n.nose)}</div>` : ''}
+        ${n.memory ? `<div class="nquote" style="border-left-color:var(--purple);"><span class="qlabel" style="color:var(--purple);">💭 脑海里冒出的画面</span>${esc(n.memory)}</div>` : ''}
+        ${n.feel ? `<div class="nquote" style="border-left-color:var(--green);"><span class="qlabel" style="color:var(--green);">🤲 手指和皮肤的触感</span>${esc(n.feel)}</div>` : ''}
+        ${n.sound ? `<div class="nquote" style="border-left-color:var(--blue);"><span class="qlabel" style="color:var(--blue);">👂 听到的声音</span>${esc(n.sound)}</div>` : ''}
+        ${n.story ? `<div class="nquote" style="border-left-color:var(--pink);"><span class="qlabel" style="color:var(--pink);">📚 如果这个气味是一个故事</span>${esc(n.story)}</div>` : ''}
+        ${n.content ? `<div class="nbody">${esc(n.content)}</div>` : ''}
+        ${n.favorite ? `<div class="nstar"><span class="slabel">⭐ 今天最让我惊喜的是</span><div style="margin-top:3px;">${esc(n.favorite)}</div></div>` : ''}
+        <div class="ndate">${esc(n.date)}</div>
+      </div>`).join('')}
+  </div></div>`;
+}
+
+function getMoodEmoji(m) {
+  return { '开心':'😊','平静':'😌','兴奋':'🤩','放松':'🍃','好奇':'🤔','沉思':'💭','惊喜':'✨','困惑':'😕' }[m] || '😊';
+}
+
+function getNoteGuides(week) {
+  const intro = (w1, w2) => `<b>${w1}</b>${w2}`;
+  const g = {
+    1: { intro: intro('这是你的第一份气味笔记！', '不用写得太多，就像跟好朋友聊天一样，把你闻到的、想到的写下来就好。'), prompts: [{emoji:'👃',title:'鼻子闻到了什么？',hint:'试着用3个词描述（甜甜的、凉凉的、像柠檬）'},{emoji:'💭',title:'让你想起了什么？',hint:'一件事、一个地方、一个人都行～'}]},
+    2: { intro: intro('这周认识了好多香料！', '选一个让你印象最深的来写笔记吧。'), prompts: [{emoji:'🌿',title:'它来自植物的哪个部位？',hint:'花、叶、果还是木？'},{emoji:'🤔',title:'它和其他香料有什么不同？',hint:'颜色、形状、气味都可以比较'}]},
+    3: { intro: intro('气味就像一座金字塔，', '有前调、中调、尾调。试着记录你体验到的每一层变化！'), prompts: [{emoji:'🔺',title:'第一下闻到的是什么？',hint:'这就是前调！'},{emoji:'⏳',title:'过一会儿气味变了吗？',hint:'等等看，中调和尾调会慢慢出现'}]},
+    4: { intro: intro('今天我们调配了玫瑰花香！', '记录下你的调配感受，这是属于你的独家记忆。'), prompts: [{emoji:'🌹',title:'调配前后，气味有什么变化？',hint:'单朵花和调出来的香水，感觉一样吗？'},{emoji:'🤲',title:'调配时手指沾到了什么？',hint:'精油的触感、温度都可以写'}]},
+    5: { intro: intro('柑橘的气味总是让人精神一振！', '记录下你今天的感受吧。'), prompts: [{emoji:'🍊',title:'哪种柑橘味最让你喜欢？',hint:'柠檬、甜橙还是葡萄柚？'},{emoji:'📚',title:'如果这个气味是个人...',hint:'它会是怎样的性格？开朗？活泼？'}]},
+    6: { intro: intro('木质调让人感觉温暖又安心。', '慢慢地闻，慢慢地写...'), prompts: [{emoji:'🪵',title:'木质香让你想到了什么场景？',hint:'壁炉旁？森林里？老书房？'},{emoji:'⏳',title:'加了定香剂后气味更持久了吗？',hint:'记录留香时间的差别'}]},
+    7: { intro: intro('这周开始用AI当你的小助手啦！', '把你的气味梦想写进笔记里吧。'), prompts: [{emoji:'✨',title:'你最想创造的气味是什么？',hint:'天马行空地想象，没有标准答案！'},{emoji:'🤖',title:'AI给了你什么惊喜？',hint:'AI分析的结果和你想的一样吗？'}]},
+    8: { intro: intro('AI帮我们把想法变成了具体配方，', '记录下这个奇妙的过程！'), prompts: [{emoji:'🧪',title:'看到AI建议的材料，你有什么感觉？',hint:'好奇？期待？还是有点担心？'},{emoji:'📝',title:'你修改了AI的方案吗？',hint:'自己的创意也很重要！'}]},
+    9: { intro: intro('东方香料带着暖暖的故事感。', '它可能让你想起某个特别的时刻...'), prompts: [{emoji:'🌶',title:'第一次闻到肉桂是什么感觉？',hint:'和之前闻过的气味都不一样吧？'},{emoji:'💭',title:'这个气味带你去了哪里？',hint:'可能是某个节日、某种食物、某个人...'}]},
+    10: { intro: intro('清冷的矿物感，像雨后的石头、海边的风。', '这是一次创新尝试，勇敢记录！'), prompts: [{emoji:'❄️',title:'这个气味让你感到什么温度？',hint:'冷的？凉的？还是清清爽爽的？'},{emoji:'🌊',title:'如果把它变成一幅画...',hint:'你会画什么颜色？什么场景？'}]},
+    11: { intro: intro('今天我们要给香氛瓶穿上一件漂亮的衣服！', '设计标签也是一种创作。'), prompts: [{emoji:'🎨',title:'你选了什么颜色？为什么？',hint:'颜色和气味之间有什么关系呢？'},{emoji:'✨',title:'看到成品标签的心情？',hint:'满意？惊喜？还想改改？'}]},
+    12: { intro: intro('这是你的最终配方！', '从灵感到成品，你走了很远。好好记录这一刻！'), prompts: [{emoji:'🏆',title:'调配过程中最满意的是什么？',hint:'可能是某个材料的搭配，也可能是最终的味道'},{emoji:'📝',title:'如果再做一次，你会改什么？',hint:'失败的经验也是宝贵的！'}]},
+    13: { intro: intro('今天你的香氛作品正式完成了！', '贴上标签，它就是属于你的独一无二。'), prompts: [{emoji:'📦',title:'拿到成品的那一刻感觉怎样？',hint:'骄傲？开心？还是有点不舍？'},{emoji:'👃',title:'和刚开始调配时比，味道变了吗？',hint:'静置后的香气可能更柔和了'}]},
+    14: { intro: intro('给你的香氛写一段美丽的文字吧！', '它值得被好好介绍。'), prompts: [{emoji:'✍️',title:'如果用一句话介绍你的香水...',hint:'你会怎么说？像广告语一样！'},{emoji:'📚',title:'你的香水适合什么场景？',hint:'读书时？睡觉前？还是开心的时候？'}]},
+    15: { intro: intro('展厅布置好了！', '记录下你和同学们的作品展示时刻。'), prompts: [{emoji:'🏛',title:'同学的哪句评价让你印象最深？',hint:'不管是夸奖还是建议'},{emoji:'🤝',title:'你最喜欢谁的作品？为什么？',hint:'学会欣赏别人的创作'}]},
+    16: { intro: intro('16周的课程结束了！', '回望这段气味旅程，你一定有很多话想说。'), prompts: [{emoji:'🎉',title:'这学期最大的收获是什么？',hint:'不一定是知识，可能是一个发现、一个朋友...'},{emoji:'🌟',title:'以后你还想继续探索气味吗？',hint:'气味的世界还有好多秘密等着你！'}]}
+  };
+  return g[week] || g[1];
+}
+
+function openNoteEditor(n, week) {
+  const isNew = !n;
+  const obj = n || { title:'', content:'', weather:'', mood:'开心', location:'', nose:'', memory:'', feel:'', sound:'', story:'', favorite:'', week: week || currentWeek, date: isoToday() };
+  const guides = getNoteGuides(week || currentWeek);
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  ov.innerHTML = `<div class="modal">
+    <div class="drag-handle"></div>
+    <h3>${isNew ? '✍️ 写香气笔记' : '编辑笔记'}</h3>
+    <div class="sub">没有标准答案，想到什么就写什么 ✨</div>
+    <div class="guide-box" style="margin-bottom:12px;">
+      <div class="gtitle">${guides.prompts[0].emoji} ${esc(guides.prompts[0].title)}</div>
+      <div class="gtip">${esc(guides.prompts[0].hint)}</div>
+    </div>
+    <div class="field"><label>给这篇笔记起个名字</label>
+      <input id="n-title" value="${attr(obj.title)}" placeholder="如：第一次闻到肉桂的惊喜" /></div>
+    <div class="frow">
+      <div class="field"><label>🌤 今天天气</label>
+        <input id="n-weather" value="${attr(obj.weather)}" placeholder="晴/阴/温度" /></div>
+      <div class="field"><label>😊 现在的心情</label>
+        <select id="n-mood">${['开心','平静','兴奋','放松','好奇','沉思','惊喜','困惑'].map(m => `<option ${obj.mood===m?'selected':''}>${m}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>📍 在哪里闻到的？</label>
+      <input id="n-location" value="${attr(obj.location)}" placeholder="教室/花园/实验室/家里..." /></div>
+    <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+    <div style="font-size:13px;font-weight:800;margin-bottom:10px;color:var(--purple);">🌈 五感全开 —— 不止用鼻子闻</div>
+    <div class="field"><label>👃 鼻子闻到的第一感觉</label>
+      <textarea id="n-nose" rows="2" placeholder="刚凑近时，第一下是什么感觉？试着不用「好闻」「难闻」">${attr(obj.nose)}</textarea></div>
+    <div class="field"><label>🤲 手指摸到了什么？皮肤有感觉吗？</label>
+      <textarea id="n-feel" rows="2" placeholder="精油的触感、瓶子表面的温度、叶子的纹理...">${attr(obj.feel)}</textarea></div>
+    <div class="field"><label>👂 闭上眼睛，你听到了什么？</label>
+      <input id="n-sound" value="${attr(obj.sound)}" placeholder="教室的嗡嗡声？窗外的鸟叫？" /></div>
+    <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+    <div style="font-size:13px;font-weight:800;margin-bottom:10px;color:var(--pink);">💭 联想与创作</div>
+    <div class="field"><label>💭 这个气味让你脑海里冒出了什么画面？</label>
+      <textarea id="n-memory" rows="2" placeholder="一个人、一个地方、一段回忆...">${attr(obj.memory)}</textarea></div>
+    <div class="field"><label>📚 如果这个气味是一个故事，它的开头是...</label>
+      <textarea id="n-story" rows="2" placeholder="「在一个下雨的早晨...」试着编一个小故事">${attr(obj.story)}</textarea></div>
+    <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+    <div style="font-size:13px;font-weight:800;margin-bottom:10px;color:var(--yellow);">⭐ 今日发现</div>
+    <div class="field"><label>⭐ 今天最让我惊喜的一件事是...</label>
+      <textarea id="n-favorite" rows="2" placeholder="可能是一个新发现、一个有趣的感受...">${attr(obj.favorite)}</textarea></div>
+    <div class="field"><label>📝 还想补充点什么？（随便写）</label>
+      <textarea id="n-content" rows="3" placeholder="任何想说的都可以写在这里...">${attr(obj.content)}</textarea></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="this.closest('.overlay').remove()">取消</button>
+      <button class="btn" onclick="saveNote(${isNew?'null':obj.id}, ${obj.week})">💾 保存笔记</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if(e.target === ov) ov.remove(); });
+}
+
+function saveNote(id, week) {
+  const obj = {
+    title: $('#n-title').value || '无题笔记',
+    content: $('#n-content').value,
+    weather: $('#n-weather').value,
+    mood: $('#n-mood').value,
+    location: $('#n-location').value,
+    nose: $('#n-nose').value,
+    memory: $('#n-memory').value,
+    feel: $('#n-feel').value,
+    sound: $('#n-sound').value,
+    story: $('#n-story').value,
+    favorite: $('#n-favorite').value,
+    week: week || currentWeek, date: isoToday()
+  };
+  data.notes = data.notes || [];
+  if(id) { const i = data.notes.findIndex(x => x.id === id); obj.id = id; data.notes[i] = obj; }
+  else { obj.id = Date.now(); data.notes.push(obj); }
+  document.querySelectorAll('.overlay').forEach(o => o.remove());
+  persist(); render(); showToast('✓ 笔记已保存');
+}
+function editNote(id) { const n = data.notes.find(x => x.id === id); if(n) openNoteEditor(n, n.week); }
+function deleteNote(id) {
+  if(!confirm('确定删除这篇笔记吗？')) return;
+  data.notes = data.notes.filter(x => x.id !== id);
+  persist(); render(); showToast('✓ 已删除');
+}
+
+/* ========== 配方工具 ========== */
+function renderRecipeTool(w) {
+  const recipes = (data.recipes || []).filter(r => r.week === w.week);
+  const seeds = getSeedRecipes(w.week);
+  const all = [...seeds, ...recipes];
+
+  return `<div class="tool-section"><div class="tool-card">
+    <div class="sec-title">
+      <span class="emoji">🧪</span> 调配配方
+      <span class="spacer"></span>
+      <button class="btn ghost" style="padding:7px 13px;font-size:12px;" onclick="openRecipeEditor(null, ${w.week})">+ 新建配方</button>
+    </div>
+    <div class="safety-box" style="margin-bottom:12px;">
+      <div class="title">⚠️ 安全小贴士</div>
+      <div class="item">✅ 在通风良好的地方操作 &nbsp; ✅ 不要让精油碰到皮肤 &nbsp; ✅ 不能喝！<br>✅ 远离火和眼睛 &nbsp; ✅ 用完盖紧瓶盖，阴凉处保存</div>
+    </div>
+    ${all.length === 0 ? '<div class="empty"><div class="icon">🧪</div><div class="desc">还没有配方，点击「+ 新建配方」创建吧</div></div>' :
+    all.map((r, idx) => `
+      <div class="recipe-card">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="rname">${esc(r.title)}</div>
+          <span class="spacer"></span>
+          ${r.completed ? '<span class="chip" style="background:var(--green-light);color:var(--green);">✓ 已完成</span>' : ''}
+          <div class="acts">
+            <button onclick="showRecipeDetail('${r.id || ('seed'+w.week+idx)}', ${w.week})" title="查看">👁</button>
+            ${r.id ? `<button onclick="editRecipe(${r.id})" title="编辑">✏️</button><button class="del" onclick="deleteRecipe(${r.id})" title="删除">🗑</button>` : ''}
+          </div>
+        </div>
+        <div class="rmeta">材料：${esc((r.materials||'').split('\\n').slice(0,2).join(' · ') || '暂无材料')}</div>
+      </div>`).join('')}
+  </div></div>`;
+}
+
+function getSeedRecipes(week) {
+  const s = {
+    4: [{ week:4, title:'🌹 玫瑰花香调配（示范）', materials:'玫瑰精油 3滴\n茉莉精油 2滴\n檀香精油 1滴\n基础油 10ml', steps:'1.先在瓶中倒入基础油\n2.滴入玫瑰精油，轻轻摇匀\n3.加入茉莉精油\n4.最后滴入檀香精油定香\n5.盖紧瓶盖，轻轻摇晃10次', tips:'玫瑰是中调的主角\n檀香帮助留香' }],
+    5: [{ week:5, title:'🍊 柑橘清香调配（示范）', materials:'柠檬精油 4滴\n薄荷精油 1滴\n雪松精油 2滴\n基础油 10ml', steps:'1.倒入基础油\n2.先加柠檬精油\n3.加薄荷精油（少量！很凉）\n4.加雪松精油\n5.摇匀，静置5分钟', tips:'柑橘类很容易挥发\n一定要密封保存' }],
+    6: [{ week:6, title:'🪵 木质温暖调配（示范）', materials:'檀香精油 3滴\n雪松精油 2滴\n广藿香精油 1滴\n基础油 10ml', steps:'1.倒入基础油\n2.加檀香精油（主香）\n3.加雪松精油\n4.加广藿香（少量定香）\n5.摇匀放置10分钟', tips:'木质调留香很久\n是很好的定香剂' }],
+    8: [{ week:8, title:'✨ AI辅助配方（参考）', materials:'根据AI分析结果填写\n参考AI推荐的材料和用量', steps:'1.用AI工具分析你的香气主题\n2.记录AI推荐的前中尾调\n3.确定每种材料的滴数\n4.保存为正式配方', tips:'用量从小开始尝试\n可以慢慢调整' }],
+    9: [{ week:9, title:'🌶 暖香东方调配（示范）', materials:'肉桂精油 2滴\n丁香精油 1滴\n橙花精油 2滴\n檀香精油 1滴\n基础油 10ml', steps:'1.倒入基础油\n2.加橙花精油（前调）\n3.加肉桂精油（中调，少量！）\n4.加丁香精油\n5.加檀香定香\n6.摇匀', tips:'东方香料气味浓郁\n一次只用1-2滴！' }],
+    10: [{ week:10, title:'❄️ 清冷矿物调配（示范）', materials:'薄荷精油 2滴\n雪松精油 2滴\n海盐微量\n基础油 10ml', steps:'1.倒入基础油\n2.加薄荷（清凉前调）\n3.加雪松（木质中调）\n4.加微量海盐（矿物感）\n5.摇匀', tips:'薄荷很凉，少量使用\n创造雨后清凉的感觉' }],
+    12: [{ week:12, title:'🏆 专属香气配方（模板）', materials:'根据你之前的AI分析填写\n最终确定每种材料的滴数', steps:'1.回顾之前的所有配方\n2.确定最喜欢的香调比例\n3.按最终配方精确调配\n4.写下调配感受，保存为最终版', tips:'这是你的专属作品\n仔细操作，好好享受这一刻！' }]
+  };
+  return s[week] || [];
+}
+
+// 临时保存seed配方以供查看
+window._seedCache = {};
+function cacheSeeds() {
+  CONFIG.weeks.forEach(w => {
+    const ss = getSeedRecipes(w.week);
+    ss.forEach((s, i) => { window._seedCache['seed'+w.week+i] = s; });
+  });
+}
+cacheSeeds();
+
+function showRecipeDetail(id, week) {
+  let r;
+  if (String(id).startsWith('seed')) {
+    r = window._seedCache[id];
+  } else {
+    r = (data.recipes || []).find(x => x.id === id);
+  }
+  if (!r) return;
+  const steps = (r.steps || '').split('\n').filter(Boolean).map((t, i) => `<div class="recipe-step"><div class="sn">${i+1}</div><div class="st">${esc(t.replace(/^\d+[\.\、\)]\s*/, ''))}</div></div>`).join('');
+  const tips = (r.tips || '').split('\n').filter(Boolean).map(t => `💡 ${esc(t)}`).join('<br>');
+  const mats = (r.materials || '').split('\n').filter(Boolean).map(m => `<div class="mitem">${esc(m)}</div>`).join('') || '<div class="mitem">（暂无材料）</div>';
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  ov.innerHTML = `<div class="modal">
+    <div class="drag-handle"></div>
+    <h3>🧪 ${esc(r.title)}</h3>
+    <div class="sub">${r.week ? '第'+r.week+'周 · 调香配方' : ''}</div>
+    <div class="mat-section" style="margin-bottom:12px;">
+      <div class="mlabel">🧴 材料清单</div>${mats}
+    </div>
+    ${steps ? `<div style="margin-bottom:12px;"><div style="font-size:13px;font-weight:800;margin-bottom:6px;">👣 调配步骤</div>${steps}</div>` : ''}
+    ${tips ? `<div class="safety-box"><div class="title">💡 小贴士</div><div class="item">${tips}</div></div>` : ''}
+    <div class="modal-actions"><button class="btn btn-block" onclick="this.closest('.overlay').remove()">知道啦</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if(e.target === ov) ov.remove(); });
+}
+
+function openRecipeEditor(r, week) {
+  const isNew = !r;
+  const obj = r || { title:'', materials:'', steps:'', tips:'', completed:false, week: week || currentWeek };
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  ov.innerHTML = `<div class="modal">
+    <div class="drag-handle"></div>
+    <h3>${isNew ? '🧪 新建配方' : '编辑配方'}</h3>
+    <div class="sub">把你的调香配方记录下来吧</div>
+    <div class="field"><label>配方名称</label>
+      <input id="r-title" value="${attr(obj.title)}" placeholder="如：清晨花园·专属配方" /></div>
+    <div class="field"><label>🧴 材料清单（每行一种，格式：材料 用量）</label>
+      <textarea id="r-materials" rows="4" placeholder="柠檬精油 3滴&#10;玫瑰精油 2滴&#10;基础油 10ml">${attr(obj.materials)}</textarea></div>
+    <div class="field"><label>👣 调配步骤（每行一步）</label>
+      <textarea id="r-steps" rows="4" placeholder="1. 先在瓶中倒入基础油&#10;2. 滴入柠檬精油，摇匀&#10;3. ...">${attr(obj.steps)}</textarea></div>
+    <div class="field"><label>💡 小贴士 / 注意事项（每行一条）</label>
+      <textarea id="r-tips" rows="2" placeholder="柑橘类精油易挥发，用完盖紧">${attr(obj.tips)}</textarea></div>
+    <div class="field">
+      <label><input type="checkbox" id="r-done" ${obj.completed?'checked':''} style="width:auto;display:inline;margin-right:6px;"> 这个配方已经调配完成</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="this.closest('.overlay').remove()">取消</button>
+      <button class="btn" onclick="saveRecipe(${isNew?'null':obj.id}, ${obj.week})">💾 保存配方</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if(e.target === ov) ov.remove(); });
+}
+function saveRecipe(id, week) {
+  const obj = {
+    title: $('#r-title').value || '未命名配方',
+    materials: $('#r-materials').value,
+    steps: $('#r-steps').value,
+    tips: $('#r-tips').value,
+    completed: $('#r-done').checked,
+    week: week || currentWeek
+  };
+  data.recipes = data.recipes || [];
+  if(id) { const i = data.recipes.findIndex(x => x.id === id); obj.id = id; data.recipes[i] = obj; }
+  else { obj.id = Date.now(); data.recipes.push(obj); }
+  document.querySelectorAll('.overlay').forEach(o => o.remove());
+  persist(); render(); showToast('✓ 配方已保存');
+}
+function editRecipe(id) { const r = data.recipes.find(x => x.id === id); if(r) openRecipeEditor(r, r.week); }
+function deleteRecipe(id) { if(!confirm('确定删除这个配方吗？')) return; data.recipes = data.recipes.filter(x => x.id !== id); persist(); render(); showToast('✓ 已删除'); }
+
+/* ========== 标签设计工具 ========== */
+function renderLabelTool(w) {
+  const labels = (data.labels || []).filter(l => l.week === w.week);
+  const f = labels[0] || {};
+  const decoMap = { '花瓣藤蔓':'🌸🌿', '几何线条':'📐✨', '自然元素':'🍃🌙', '星月光辉':'⭐🌙' };
+  return `<div class="tool-section"><div class="tool-card">
+    <div class="sec-title">
+      <span class="emoji">🏷</span> 标签设计
+      <span class="spacer"></span>
+      <button class="btn ghost" style="padding:7px 13px;font-size:12px;" onclick="openLabelEditor(null, ${w.week})">+ 设计新标签</button>
+    </div>
+    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;justify-content:center;">
+      <div style="flex:0 0 auto;">
+        <div class="label-preview">
+          <div class="bottle">🍶</div>
+          <div class="lname">${esc(f.fragranceName || '香气名称')}</div>
+          <div class="ltype">${esc(f.bottleType || '方瓶')} · ${esc(f.colorScheme || '玫瑰粉')}</div>
+          <div class="ldeco">${decoMap[f.decoElements] || '✨'}</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:200px;">
+        ${labels.length === 0 ? '<div class="empty" style="padding:16px 8px;"><div class="icon">🏷</div><div class="desc">设计你的第一个标签吧！</div></div>' :
+        labels.map(l => `
+          <div class="recipe-card" style="margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div style="flex:1;min-width:0;">
+                <div class="rname" style="font-size:13px;">${esc(l.title || '未命名标签')}</div>
+                <div class="rmeta">${esc(l.fragranceName || '')} · ${esc(l.bottleType || '')} · ${esc(l.colorScheme || '')}</div>
+              </div>
+              <div class="acts">
+                <button onclick="editLabel(${l.id})" title="编辑">✏️</button>
+                <button class="del" onclick="deleteLabel(${l.id})" title="删除">🗑</button>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div></div>`;
+}
+function openLabelEditor(l, week) {
+  const isNew = !l;
+  const o = l || { title:'', fragranceName:'', bottleType:'方瓶', colorScheme:'玫瑰粉', fontStyle:'优雅', decoElements:'花瓣藤蔓', week: week || currentWeek };
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  ov.innerHTML = `<div class="modal">
+    <div class="drag-handle"></div>
+    <h3>${isNew ? '🎨 设计新标签' : '编辑标签'}</h3>
+    <div class="sub">为你的香氛瓶设计专属标签</div>
+    <div class="field"><label>标签设计名称</label>
+      <input id="l-title" value="${attr(o.title)}" placeholder="如：晨光玫瑰标签" /></div>
+    <div class="field"><label>🌸 香氛名称（显示在瓶身）</label>
+      <input id="l-frag" value="${attr(o.fragranceName)}" placeholder="如：清晨花园" /></div>
+    <div class="frow">
+      <div class="field"><label>瓶型</label>
+        <select id="l-bottle">${['方瓶','圆瓶','水滴瓶','试管瓶'].map(b=>`<option ${o.bottleType===b?'selected':''}>${b}</option>`).join('')}</select></div>
+      <div class="field"><label>配色方案</label>
+        <select id="l-color">${['玫瑰粉','柑橘橙','森林绿','海洋蓝','薰衣紫','蜂蜜黄','原木棕','静夜黑'].map(b=>`<option ${o.colorScheme===b?'selected':''}>${b}</option>`).join('')}</select></div>
+    </div>
+    <div class="frow">
+      <div class="field"><label>字体风格</label>
+        <select id="l-font">${['优雅','可爱','简洁','古典','活泼'].map(b=>`<option ${o.fontStyle===b?'selected':''}>${b}</option>`).join('')}</select></div>
+      <div class="field"><label>装饰元素</label>
+        <select id="l-deco">${['花瓣藤蔓','几何线条','自然元素','星月光辉','无装饰'].map(b=>`<option ${o.decoElements===b?'selected':''}>${b}</option>`).join('')}</select></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="this.closest('.overlay').remove()">取消</button>
+      <button class="btn purple" onclick="saveLabel(${isNew?'null':o.id}, ${o.week})">💾 保存标签</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if(e.target === ov) ov.remove(); });
+}
+function saveLabel(id, week) {
+  const obj = {
+    title: $('#l-title').value || '未命名标签',
+    fragranceName: $('#l-frag').value,
+    bottleType: $('#l-bottle').value,
+    colorScheme: $('#l-color').value,
+    fontStyle: $('#l-font').value,
+    decoElements: $('#l-deco').value,
+    week: week || currentWeek
+  };
+  data.labels = data.labels || [];
+  if(id) { const i = data.labels.findIndex(x => x.id === id); obj.id = id; data.labels[i] = obj; }
+  else { obj.id = Date.now(); data.labels.push(obj); }
+  document.querySelectorAll('.overlay').forEach(o => o.remove());
+  persist(); render(); showToast('✓ 标签已保存');
+}
+function editLabel(id) { const l = data.labels.find(x => x.id === id); if(l) openLabelEditor(l, l.week); }
+function deleteLabel(id) { if(!confirm('确定删除这个标签设计吗？')) return; data.labels = data.labels.filter(x => x.id !== id); persist(); render(); showToast('✓ 已删除'); }
+
+/* ========== AI 工具（趣味模拟，无需联网） ========== */
+function renderAITool(w) {
+  return `<div class="tool-section"><div class="tool-card">
+    <div class="sec-title"><span class="emoji">🤖</span> AI 气味小助手<span class="spacer"></span>
+      <span class="chip" style="background:var(--purple-light);color:var(--purple);">✨ AI 辅助</span></div>
+    <div class="ai-box">
+      <div class="ai-head"><div class="ai-badge">🤖 AI 气味顾问</div></div>
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6;">
+        💡 描述你想要的气味感觉（比如：「像雨后的花园，有泥土和青草的味道」），AI会帮你分析香调方向！
+      </div>
+      <div class="ai-suggestions">
+        <button class="ai-suggestion" onclick="document.getElementById('ai-input').value='雨后的花园，泥土和青草味'; runAIAnalysis()">🌧 雨后花园</button>
+        <button class="ai-suggestion" onclick="document.getElementById('ai-input').value='温暖的冬天午后，阳光和热可可'; runAIAnalysis()">☀️ 冬日暖阳</button>
+        <button class="ai-suggestion" onclick="document.getElementById('ai-input').value='夏日海边，咸咸的海风'; runAIAnalysis()">🌊 夏日海边</button>
+        <button class="ai-suggestion" onclick="document.getElementById('ai-input').value='清晨的森林，露水和松香'; runAIAnalysis()">🌲 清晨森林</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="ai-input" placeholder="描述你梦想的气味..." style="flex:1;padding:12px 14px;font-size:14px;border-radius:12px;" />
+        <button class="btn purple" onclick="runAIAnalysis()" style="padding:11px 16px;flex-shrink:0;">✨ 分析</button>
+      </div>
+      <div id="ai-result"></div>
+    </div>
+  </div></div>`;
+}
+
+function runAIAnalysis() {
+  const input = $('#ai-input')?.value?.trim();
+  if (!input) { showToast('请先描述一下你想要的气味～'); return; }
+  const resultBox = $('#ai-result'); if(!resultBox) return;
+  resultBox.innerHTML = `<div class="ai-result"><div class="ai-result-title">⏳ AI 正在分析你的香气主题...</div></div>`;
+
+  setTimeout(() => {
+    // 基于关键词的本地AI建议（无需联网）
+    const t = input;
+    let top = ['柠檬','佛手柑','葡萄柚','薄荷'];
+    let mid = ['玫瑰','茉莉','橙花','薰衣草'];
+    let base = ['檀香','雪松','广藿香','香草'];
+    let theme = '自然清新调';
+    let story = '像是清晨打开窗户，微风拂面的感觉。';
+    let col = '#5a8dc4';
+
+    if (/雨|花园|泥土|青草|森/.test(t)) { top=['佛手柑','薄荷','绿橘']; mid=['玫瑰','茉莉','橙花']; base=['雪松','广藿香','橡苔']; theme='雨后花园调'; story='雨滴打在绿叶上，泥土的香气慢慢升起...'; col='#6ba368'; }
+    else if (/冬|暖|阳|可|焦糖|肉桂|东方|辣/.test(t)) { top=['橙皮','肉桂叶','小豆蔻']; mid=['玫瑰','丁香','橙花']; base=['檀香','香草','琥珀']; theme='东方暖香调'; story='冬日午后的阳光，洒在一杯热可可上...'; col='#d4794a'; }
+    else if (/海|风|咸|凉|冷|清|冰|矿/.test(t)) { top=['柠檬','薄荷','海盐']; mid=['橙花','茉莉','水生花']; base=['雪松','龙涎香','白麝香']; theme='海洋清冽调'; story='咸咸的海风吹过，带来远方的清凉...'; col='#5a8dc4'; }
+    else if (/晨|露|松香|树|木/.test(t)) { top=['佛手柑','柠檬','绿调']; mid=['杜松','松针','薰衣草']; base=['雪松','柏木','琥珀']; theme='森林晨曦调'; story='走进清晨的松林，露水还挂在枝叶上...'; col='#6ba368'; }
+    else if (/花|玫瑰|樱|温柔|浪漫|女|甜/.test(t)) { top=['佛手柑','桃子','梨']; mid=['玫瑰','茉莉','牡丹']; base=['檀香','麝香','香草']; theme='浪漫花香调'; story='漫步在玫瑰花丛中，花瓣轻轻飘落...'; col='#d47a9e'; }
+    else if (/果|柑橘|橙|柠檬|清新|开|活泼/.test(t)) { top=['柠檬','甜橙','葡萄柚']; mid=['茉莉','橙花','芫荽']; base=['雪松','麝香','琥珀']; theme='柑橘活力调'; story='剥开一颗新鲜橙子，酸甜的汁水在口中迸发...'; col='#e0a93b'; }
+    else if (/书|墨|古|安静|诗|茶|文艺/.test(t)) { top=['佛手柑','绿茶','柠檬']; mid=['铃兰','茉莉','鸢尾']; base=['雪松','麝香','皮革']; theme='书香木质调'; story='翻开一本旧书，墨香与纸香交织在一起...'; col='#8a7a68'; }
+    else if (/梦|星空|夜|月|神|奇幻/.test(t)) { top=['佛手柑','梨','黑加仑']; mid=['牡丹','鸢尾','小苍兰']; base=['檀香','麝香','广藿香']; theme='梦幻星空调'; story='仰望夏夜的星空，空气中飘来淡淡的花香...'; col='#9a7ab5'; }
+
+    resultBox.innerHTML = `
+      <div class="ai-result" style="border-left:4px solid ${col};padding-left:12px;">
+        <div class="ai-result-title" style="color:${col};">✨ AI 分析完成！你的香气主题是：${theme}</div>
+        <div class="ai-result-item"><div class="label">💡 主题解读</div><div class="value">${story}</div></div>
+        <div class="ai-result-item"><div class="label">☀️ 建议前调</div><div class="value">${top.join('、')}</div></div>
+        <div class="ai-result-item"><div class="label">🌸 建议中调</div><div class="value">${mid.join('、')}</div></div>
+        <div class="ai-result-item"><div class="label">🌳 建议尾调</div><div class="value">${base.join('、')}</div></div>
+        <div class="ai-result-item"><div class="label">📝 使用建议</div><div class="value">可先按前调:中调:尾调 = 4:3:1 的比例尝试，每种精油从小滴数开始（前调3-4滴、中调2-3滴、尾调1滴），根据个人喜好调整！</div></div>
+        <div style="margin-top:10px;"><button class="btn ghost" style="font-size:12px;padding:8px 14px;" onclick="saveAIAsRecipe('${theme}','${top.join(' 2滴\\n')} 2滴\\n${mid.join(' 2滴\\n')} 2滴\\n${base.join(' 1滴\\n')} 1滴\\n基础油 10ml')">📋 保存为配方草稿</button></div>
+      </div>`;
+  }, 900);
+}
+
+function saveAIAsRecipe(title, materials) {
+  data.recipes = data.recipes || [];
+  data.recipes.push({ id: Date.now(), title: '✨ AI建议：' + title, materials, steps: '1.先倒入基础油\n2.按前→中→尾顺序加入精油\n3.每加一种摇匀\n4.盖紧放置24小时后再闻', tips: 'AI只是参考！你可以随心调整，创造属于自己的味道～', completed: false, week: currentWeek });
+  persist(); render(); showToast('✓ 已保存为配方草稿');
+}
+
+/* ========== 数据导入导出 ========== */
+function exportJSON() {
+  const snap = { notes: data.notes||[], recipes: data.recipes||[], fragrances: data.fragrances||[], labels: data.labels||[], completedWeeks: data.completedWeeks||{}, taskProgress: data.taskProgress||{}, currentWeek, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(snap, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob); const a = document.createElement('a');
+  const d = new Date(); const stamp = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  a.href = url; a.download = `气味档案室-数据-${stamp}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url); showToast('✓ 数据已导出为JSON文件');
+}
+
+function importJSON(ev) {
+  const f = ev.target.files?.[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = e => { try {
+    const p = JSON.parse(e.target.result);
+    let msg = [];
+    if(Array.isArray(p.notes)) { data.notes = mergeA(data.notes||[], p.notes, 'title,content'); msg.push(`笔记 ${p.notes.length}条`); }
+    if(Array.isArray(p.recipes)) { data.recipes = mergeA(data.recipes||[], p.recipes, 'title,materials'); msg.push(`配方 ${p.recipes.length}个`); }
+    if(Array.isArray(p.labels)) { data.labels = mergeA(data.labels||[], p.labels, 'title,fragranceName'); msg.push(`标签 ${p.labels.length}个`); }
+    if(p.completedWeeks) data.completedWeeks = Object.assign(data.completedWeeks||{}, p.completedWeeks);
+    if(p.taskProgress) data.taskProgress = Object.assign(data.taskProgress||{}, p.taskProgress);
+    if(p.currentWeek) { currentWeek = p.currentWeek; data.currentWeek = currentWeek; }
+    persist(); render(); showToast('✓ 导入成功：'+msg.join('，'));
+  } catch(err) { alert('导入失败：文件格式不正确。\n\n'+err.message); } };
+  r.readAsText(f, 'utf-8'); ev.target.value = '';
+}
+function mergeA(ex, inc, keysStr) {
+  const keys = keysStr.split(',');
+  const exists = item => ex.find(e => keys.every(k => e[k] === item[k]));
+  inc.forEach(item => { if(!exists(item)) { const c = JSON.parse(JSON.stringify(item)); if(!c.id) c.id = Date.now()+Math.random()*10000; ex.push(c); } });
+  return ex;
+}
+
+/* ========== 另存为HTML ========== */
+function saveAsHTML() {
+  showToast('⏳ 正在打包...');
+  setTimeout(() => {
+    try {
+      const snap = { notes: data.notes||[], recipes: data.recipes||[], fragrances: data.fragrances||[], labels: data.labels||[], completedWeeks: data.completedWeeks||{}, taskProgress: data.taskProgress||{}, currentWeek, savedAt: new Date().toISOString() };
+      const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(snap))));
+      const inject = `\n<script>;(function(){try{const b64="${base64}";const raw=decodeURIComponent(escape(atob(b64)));const snap=JSON.parse(raw);const key="${CONFIG.storageKey}";if(!localStorage.getItem(key)){localStorage.setItem(key,JSON.stringify({notes:snap.notes||[],recipes:snap.recipes||[],fragrances:snap.fragrances||[],labels:snap.labels||[],completedWeeks:snap.completedWeeks||{},taskProgress:snap.taskProgress||{},currentWeek:snap.currentWeek||1}));}setTimeout(()=>{const t=document.createElement("div");t.textContent="✓ 已自动载入笔记/配方数据(共"+(snap.notes?.length||0)+"篇笔记)";t.style.cssText="position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#6ba368;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:9999;";document.body.appendChild(t);setTimeout(()=>t.remove(),5000);},800);}catch(e){console.warn("载入失败",e);}})();<\/script>\n`;
+      const html = document.documentElement.outerHTML;
+      const finalHtml = html.replace(/(<\/body>)/i, inject + '$1');
+      const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob); const a = document.createElement('a');
+      const d = new Date(); const stamp = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+      a.href = url; a.download = `气味档案室-分享版-${stamp}.html`; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url); showToast('✓ 已生成含数据的HTML文件');
+    } catch(e) { alert('生成失败：' + e.message); }
+  }, 300);
+}
+
+/* ========== 清空数据 ========== */
+function clearAllData() {
+  if(!confirm('⚠️ 确认清空所有笔记、配方、标签和课程进度吗？\n\n此操作无法撤销！建议先「导出笔记/配方」备份。')) return;
+  localStorage.removeItem(CONFIG.storageKey);
+  data = store.load(); currentWeek = data.currentWeek || 1;
+  data._t = Date.now();
+  render(); showToast('✓ 已重置工作台');
+  SYNC.push(true);
+}
+
+/* ========== PDF 个人学习档案 ========== */
+function openReportPage() {
+  showToast('⏳ 正在生成学习档案...');
+  setTimeout(() => {
+    try {
+      const w = window.open('', '_blank');
+      if(!w) { alert('浏览器拦截了弹出窗口，请允许弹窗后重试。\n\n提示：长按此按钮选择「在新窗口打开」通常也可以。'); return; }
+      w.document.write(buildReportHTML());
+      w.document.close();
+      showToast('✓ 档案页已打开，点击「🖨 导出PDF」→ 选「另存为PDF」即可保存');
+    } catch(e) { alert('生成失败：' + e.message); }
+  }, 300);
+}
+
+function buildReportHTML() {
+  const WEEKS = CONFIG.weeks;
+  const notes = data.notes || [];
+  const recipes = data.recipes || [];
+  const fragrances = data.fragrances || [];
+  const labels = data.labels || [];
+  const completed = data.completedWeeks || {};
+  const taskProg = data.taskProgress || {};
+  const doneCount = Object.keys(completed).filter(k => completed[k]).length;
+  const pct = Math.round((doneCount / 16) * 100);
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+
+  const weekBar = WEEKS.map(w => {
+    const done = !!completed[w.week];
+    const tt = w.tasks || [];
+    const key = `week${w.week}`;
+    const tp = taskProg[key] || {};
+    const doneT = tt.filter((_, i) => tp[i]).length;
+    return `<span style="display:inline-flex;align-items:center;gap:2px;min-width:42px;padding:2px 5px;margin:2px;border-radius:6px;background:${done ? w.color : '#ececec'};color:${done ? '#fff' : '#888'};font-size:10px;white-space:nowrap;">${w.emoji}W${w.week}${doneT>0 ? ' '+doneT+'/'+tt.length : ''}</span>`;
+  }).join('');
+
+  const weekDetails = WEEKS.map(w => {
+    const done = !!completed[w.week];
+    const tt = w.tasks || [];
+    const key = `week${w.week}`;
+    const tp = taskProg[key] || {};
+    const taskLines = tt.map((t, i) => `<li style="margin:3px 0;color:${tp[i]?'#333':'#888'};text-decoration:${tp[i]?'none':'line-through'};opacity:${tp[i]?1:.55};font-size:12px;">${t.text}${t.hint?`<span style="color:#999;margin-left:5px;font-size:10px;">(${t.hint})</span>`:''}</li>`).join('');
+    const goalsLines = (w.goals||[]).map(g => `<span style="display:inline-block;padding:2px 7px;margin:2px;border-radius:6px;background:#fff;color:#555;font-size:11px;border:1px solid #eadfc9;">• ${g}</span>`).join(' ');
+    return `<div style="break-inside:avoid;page-break-inside:avoid;border-left:4px solid ${w.color};background:${w.bg};padding:9px 12px;border-radius:8px;margin:8px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;">
+        <div style="font-size:14px;font-weight:700;color:#333;">第${w.week}周 ${w.emoji} ${w.title}${done?' <span style="color:#6ba368;font-size:11px;">✓ 已完成</span>':''}</div>
+        <div style="font-size:10px;color:#888;flex-shrink:0;">${w.aiSupport?'✨ AI辅助':'🧑‍🏫 常规'}</div>
+      </div>
+      <div style="font-size:11px;color:#555;margin:3px 0 6px;">${w.desc||''}</div>
+      <div style="font-size:11px;margin-bottom:4px;"><b>🎯 学习目标：</b><br>${goalsLines}</div>
+      <div style="font-size:11px;"><b>📋 课堂任务：</b><ul style="margin:3px 0 0 16px;padding:0;">${taskLines}</ul></div>
+    </div>`;
+  }).join('');
+
+  const notesList = notes.length ? notes.map((n,i) => `
+    <div style="break-inside:avoid;border:1px solid #ead7c1;border-radius:8px;padding:9px 11px;margin:7px 0;background:#fffaf3;">
+      <div style="font-weight:700;color:#7a5a2a;font-size:12px;">📝 笔记 ${i+1}${n.week?' · 第'+n.week+'周':''}：${n.title||'无题'} <span style="float:right;font-weight:400;font-size:10px;color:#999;">${n.date||''}</span></div>
+      <div style="margin-top:5px;line-height:1.65;color:#444;white-space:pre-wrap;font-size:12px;">
+        ${n.nose ? `👃 ${n.nose}<br>` : ''}
+        ${n.memory ? `💭 ${n.memory}<br>` : ''}
+        ${n.feel ? `🤲 ${n.feel}<br>` : ''}
+        ${n.story ? `📚 ${n.story}<br>` : ''}
+        ${n.favorite ? `⭐ ${n.favorite}<br>` : ''}
+        ${n.content ? n.content : ''}
+      </div>
+    </div>`).join('') : '<div style="opacity:.6;padding:12px;border:1px dashed #ccc;border-radius:8px;color:#888;font-size:12px;">暂无气味笔记</div>';
+
+  const recipesList = recipes.length ? recipes.map((r,i) => {
+    const lines = (r.materials||'').split('\n').filter(Boolean).map(ing => `<tr style="background:#fff;"><td style="padding:4px 8px;border:1px solid #ead7c1;vertical-align:top;font-size:11px;" colspan="2">${esc(ing)}</td></tr>`).join('') || '<tr><td style="padding:5px 8px;color:#999;border:1px solid #ead7c1;font-size:11px;" colspan="2">无成分</td></tr>';
+    return `<div style="break-inside:avoid;border:1px solid #d5c5dd;border-radius:8px;padding:9px 11px;margin:7px 0;background:#faf6fd;">
+      <div style="font-weight:700;color:#6a4f8f;font-size:12px;">🧪 配方 ${i+1}：${r.title||'未命名'} ${r.completed?'<span style="color:#6ba368;font-size:10px;">✓ 已完成</span>':''} <span style="float:right;font-weight:400;font-size:10px;color:#999;">第${r.week||'?'}周</span></div>
+      <table style="width:100%;border-collapse:collapse;margin-top:5px;font-size:11px;"><tbody>${lines}</tbody></table>
+      ${r.steps?`<div style="margin-top:5px;font-size:11px;color:#666;white-space:pre-wrap;line-height:1.6;">👣 ${r.steps}</div>`:''}
+      ${r.tips?`<div style="margin-top:4px;font-size:11px;color:#a05278;">💡 ${r.tips.split('\n').join(' ｜ ')}</div>`:''}
+    </div>`;
+  }).join('') : '<div style="opacity:.6;padding:12px;border:1px dashed #ccc;border-radius:8px;color:#888;font-size:12px;">暂无调香配方</div>';
+
+  const labelsList = labels.length ? labels.map((l,i) => {
+    const colorBg = { '玫瑰粉':'#f8e0ea', '柑橘橙':'#fce8db', '森林绿':'#e4f2e0', '海洋蓝':'#dde9f5', '薰衣紫':'#ede4f5', '蜂蜜黄':'#fdf2dd', '原木棕':'#f0e8de', '静夜黑':'#3a3a3a' }[l.colorScheme] || '#f5f5f5';
+    const fontColor = l.colorScheme==='静夜黑' ? '#fff' : '#5a3e1b';
+    const shapeStyle = (l.bottleType==='圆瓶' || l.bottleType==='水滴瓶') ? 'border-radius:50%;' : 'border-radius:14px;';
+    return '<div style="break-inside:avoid;display:flex;gap:10px;align-items:stretch;width:100%;margin:8px 0;flex-wrap:wrap;">' +
+      '<div style="width:140px;height:160px;background:' + colorBg + ';' + shapeStyle + 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box;text-align:center;flex:0 0 auto;border:2px solid #c9a56e;">' +
+        '<div style="font-size:14px;font-weight:700;color:' + fontColor + ';margin-bottom:2px;">' + esc(l.fragranceName||l.title||'香氛') + '</div>' +
+        '<div style="height:1px;width:60%;background:' + fontColor + ';opacity:.4;margin:5px 0;"></div>' +
+        '<div style="font-size:8px;letter-spacing:1.5px;color:' + fontColor + ';opacity:.65;line-height:1.4;">' + esc(l.fontStyle||'') + ' · ' + esc(l.decoElements||'') + '</div>' +
+        '<div style="margin-top:auto;font-size:9px;color:' + fontColor + ';opacity:.55;">VOL.5ml</div>' +
+      '</div>' +
+      '<div style="flex:1;min-width:180px;display:flex;flex-direction:column;justify-content:center;gap:2px;font-size:11px;color:#444;">' +
+        '<div><b>🏷 名称：</b>' + esc(l.title||'未命名') + '</div>' +
+        '<div><b>🌸 香氛名：</b>' + esc(l.fragranceName||'—') + '</div>' +
+        '<div><b>🍶 瓶型：</b>' + esc(l.bottleType||'方瓶') + ' · <b>🎨 配色：</b>' + esc(l.colorScheme||'—') + '</div>' +
+        '<div><b>🔤 字体：</b>' + esc(l.fontStyle||'—') + ' · <b>🌿 装饰：</b>' + esc(l.decoElements||'—') + '</div>' +
+        '<div style="font-size:10px;color:#999;margin-top:3px;">第' + (l.week||'?') + '周设计</div>' +
+      '</div></div>';
+  }).join('') : '<div style="opacity:.6;padding:12px;border:1px dashed #ccc;border-radius:8px;color:#888;font-size:12px;">暂无标签设计</div>';
+
+  return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+'<title>气味档案室 · 个人学习档案</title>' +
+'<style>*{box-sizing:border-box;}body{margin:0;background:#fbf8f3;color:#333;font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;font-size:14px;line-height:1.7;}' +
+'.toolbar{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.08);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}' +
+'.toolbar h1{font-size:16px;margin:0;color:#7a4f2e;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+'.btn{padding:8px 16px;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;}.btn-primary{background:#9a7ab5;color:#fff;}.btn-secondary{background:#f2ecd9;color:#7a5a2e;}' +
+'.page{max-width:820px;margin:16px auto 40px;padding:20px 18px;background:#fff;border:1px solid #eadfc9;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.06);}' +
+'.hero{padding:20px 18px;border-radius:14px;background:linear-gradient(135deg,#f9ecd7 0%,#e5c5d5 50%,#dde0ee 100%);color:#4a3018;text-align:center;margin-bottom:20px;}' +
+'.hero h2{margin:0 0 6px;font-size:22px;letter-spacing:1px;}.hero .sub{opacity:.8;font-size:12px;}' +
+'.hero .meta{margin-top:12px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;font-size:11px;}' +
+'.hero .meta span{padding:3px 9px;background:rgba(255,255,255,.55);border-radius:10px;}' +
+'.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0 18px;}' +
+'.stat{padding:11px;border-radius:10px;text-align:center;font-size:11px;color:#666;}' +
+'.stat:nth-child(1){background:#e4f2e0;}.stat:nth-child(2){background:#fde7d6;}.stat:nth-child(3){background:#ede4f5;}.stat:nth-child(4){background:#f8e0ea;}' +
+'.stat b{display:block;font-size:20px;color:#333;margin:2px 0 4px;}' +
+'.section{margin:18px 0;}' +
+'h3{font-size:16px;color:#5a3e1b;border-bottom:2px solid #e5c9a0;padding-bottom:5px;margin:20px 0 10px;}' +
+'h3::before{content:"";display:inline-block;width:5px;height:14px;background:#9a7ab5;border-radius:3px;margin-right:7px;vertical-align:-2px;}' +
+'.bar-pct{height:12px;background:#f1ece0;border-radius:7px;overflow:hidden;margin:5px 0 8px;}' +
+'.bar-pct > i{display:block;height:100%;background:linear-gradient(90deg,#6ba368,#9a7ab5);}' +
+'.weeks-bar{padding:8px 10px;background:#faf6ef;border-radius:10px;font-size:0;margin:6px 0 3px;}' +
+'.tips{background:#fff8eb;border-left:4px solid #e0a93b;padding:9px 12px;border-radius:6px;font-size:11px;color:#7a5a2a;margin:10px 0;line-height:1.6;}' +
+'@media(min-width:640px){.stats{grid-template-columns:repeat(4,1fr);}.page{padding:28px 32px;}}' +
+'@media print{body{background:#fff;}.toolbar{display:none!important;}.page{box-shadow:none;border:none;margin:0 auto;padding:16px 10px;max-width:100%;}.section{page-break-inside:avoid;}@page{size:A4;margin:14mm 12mm;}h3{page-break-after:avoid;}}' +
+'</style></head><body id="pdf-body">' +
+'<div class="toolbar"><h1>📄 气味档案室 · 个人学习档案</h1>' +
+'<button class="btn btn-primary" onclick="window.print()">🖨 导出 / 打印 PDF</button>' +
+'<button class="btn btn-secondary" onclick="window.close()">关闭</button>' +
+'<span style="font-size:11px;color:#888;">💡 点「导出PDF」→ 选「另存为PDF」即可</span>' +
+'</div><div class="page">' +
+'<div class="hero"><h2>🌸 气 味 档 案 室 · 个 人 学 习 档 案 🌸</h2>' +
+'<div class="sub">五年级校本课程 · AI 辅助趣味调香课堂</div>' +
+'<div class="meta"><span>📅 生成日期：' + dateStr + '</span><span>📊 完成进度：' + doneCount + '/16 周</span><span>👃 笔记数：' + notes.length + '</span><span>🧪 配方数：' + recipes.length + '</span></div></div>' +
+'<div class="stats"><div class="stat"><b>' + pct + '%</b>课程进度</div><div class="stat"><b>' + notes.length + '</b>篇气味笔记</div><div class="stat"><b>' + recipes.length + '</b>个调香配方</div><div class="stat"><b>' + fragrances.length + ' / ' + labels.length + '</b>香氛 / 标签</div></div>' +
+'<div class="section"><h3>01 · 学习进度一览</h3>' +
+'<div style="display:flex;justify-content:space-between;font-size:12px;color:#666;"><span>16 周课程整体完成率</span><span><b style="color:#6ba368;">' + pct + '%</b> · ' + doneCount + '/16 周</span></div>' +
+'<div class="bar-pct"><i style="width:' + pct + '%"></i></div>' +
+'<div style="font-size:11px;color:#888;margin-bottom:4px;">📆 每周进度一览：</div>' +
+'<div class="weeks-bar">' + weekBar + '</div>' +
+'<div class="tips">💡 <b>保存为PDF：</b>点右上角「🖨 导出 PDF」，打印窗口中「目标」选择「另存为 PDF」即可生成电子档。</div></div>' +
+'<div class="section"><h3>02 · 16 周课程完成记录</h3>' + weekDetails + '</div>' +
+'<div class="section"><h3>03 · 气味笔记合集（共 ' + notes.length + ' 篇）</h3>' + notesList + '</div>' +
+'<div class="section"><h3>04 · 调香配方档案（共 ' + recipes.length + ' 个）</h3>' + recipesList + '</div>' +
+'<div class="section"><h3>05 · 标签设计成果（共 ' + labels.length + ' 张）</h3>' + labelsList + '</div>' +
+'<div style="margin-top:30px;padding-top:14px;border-top:1px dashed #e5c9a0;text-align:center;font-size:11px;color:#999;">—— 气味档案室 · 根据我的课堂数据自动生成 ——</div>' +
+'</div></body></html>';
+}
+
+/* ========== Toast ========== */
+let _toastT;
+function showToast(msg) {
+  let el = document.getElementById('_toast');
+  if(!el) { el = document.createElement('div'); el.id = '_toast'; el.className = 'toast'; document.body.appendChild(el); }
+  el.textContent = msg;
+  requestAnimationFrame(() => { el.classList.add('show'); });
+  clearTimeout(_toastT);
+  _toastT = setTimeout(() => { el.classList.remove('show'); }, 3800);
+}
+
+/* ========== 事件绑定 ========== */
+document.addEventListener('DOMContentLoaded', () => {
+  $('#btnExport').onclick = exportJSON;
+  $('#btnImport').onclick = () => $('#importFile').click();
+  $('#importFile').onchange = importJSON;
+  $('#btnSaveHTML').onclick = saveAsHTML;
+  $('#btnPDF').onclick = openReportPage;
+  $('#btnClear').onclick = clearAllData;
+  $('#btnSyncSetup').onclick = () => SYNC.setup();
+  $('#btnSyncNow').onclick = () => SYNC.syncNow();
+  render();
+  showToast('🌸 欢迎回来！你的笔记已自动载入 ✓');
+  SYNC.init();
+});
+
+// 页面关闭前再次保存
+window.addEventListener('beforeunload', () => {
+  try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(data)); } catch(e){}
+});
+
+// === PWA Service Worker 注册（离线可用 + 可安装为App）===
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      console.log('[PWA] Service Worker 已注册', reg.scope);
+    }).catch((err) => {
+      console.warn('[PWA] Service Worker 注册失败:', err);
+    });
+  });
+}
+
+// === PWA 安装提示（Android Chrome 可弹出"添加到主屏幕"）===
+let _deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _deferredPrompt = e;
+  showToast('📱 可安装为App：点击浏览器菜单 → 添加到主屏幕');
+});
+</script>
+</body>
+</html>
